@@ -59,7 +59,7 @@ app.get('/', (c) => {
         </div>
         <div class="card">
           <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">💊 最適なサプリ提案</h3>
-          <p style="color: var(--text-secondary);">マグネシウム、サイトカイン、5-ALA、BHB、マルチビタミンから、あなたに合ったサプリを提案。</p>
+          <p style="color: var(--text-secondary);">様々なサプリの中から、あなたに最適なものを提案します。</p>
         </div>
         <div class="card">
           <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">🧘 セルフケア指導</h3>
