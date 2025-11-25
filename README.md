@@ -10,7 +10,10 @@
 
 - 🎯 **無料診断**: 選択式の簡易診断でサプリとセルフケアを提案
 - 💬 **AI詳細相談**: テキストで詳しく相談し、AIが総合レポートを生成（ベーシックプラン）
+  - ✨ **OpenAI GPT-4o** または **Anthropic Claude 3.5 Sonnet** 統合済み
+  - 自動サプリスコアリング・セルフケア提案・生活習慣改善アドバイス
 - 📊 **パーソナルコーチング**: 日々の状態を記録し、パーソナライズされたメニューを自動生成（プレミアムプラン）
+  - ✨ AIが7日間のログを分析し、今日のセルフケアメニューを提案
 - 🔐 **認証システム**: JWT認証による安全なユーザー管理
 - 💾 **データ永続化**: Cloudflare D1を使用したデータベース管理
 
@@ -27,6 +30,7 @@
 - **データベース**: Cloudflare D1 (SQLite)
 - **認証**: JWT (jose)
 - **パスワードハッシュ**: Web Crypto API (PBKDF2)
+- **AI統合**: OpenAI GPT-4o / Anthropic Claude 3.5 Sonnet
 
 ### フロントエンド
 - **テンプレートエンジン**: Hono JSX
@@ -114,28 +118,46 @@ npm install
 `.dev.vars`ファイルを作成・編集：
 
 ```bash
-# JWT Secret
+# JWT Secret (ランダムな文字列を設定)
 JWT_SECRET=your-secret-key-here
 
-# AI Provider (openai or anthropic)
+# AI Provider (openai または anthropic)
 AI_PROVIDER=openai
 
 # OpenAI Configuration
-OPENAI_API_KEY=your-openai-api-key-here
+OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 OPENAI_MODEL=gpt-4o
 
-# Anthropic Configuration  
-ANTHROPIC_API_KEY=your-anthropic-api-key-here
+# Anthropic Configuration (オプション: Anthropicを使用する場合)
+ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
 ```
 
+**環境変数の説明:**
+
+| 変数名 | 必須/オプション | 説明 |
+|--------|----------------|------|
+| `JWT_SECRET` | **必須** | JWT トークンの署名に使用する秘密鍵。ランダムな長い文字列を設定 |
+| `AI_PROVIDER` | **必須** | 使用するAIプロバイダー (`openai` または `anthropic`) |
+| `OPENAI_API_KEY` | OpenAI使用時必須 | OpenAIのAPIキー (https://platform.openai.com/api-keys) |
+| `OPENAI_MODEL` | OpenAI使用時必須 | 使用するOpenAIモデル (推奨: `gpt-4o`) |
+| `ANTHROPIC_API_KEY` | Anthropic使用時必須 | AnthropicのAPIキー (https://console.anthropic.com/settings/keys) |
+| `ANTHROPIC_MODEL` | Anthropic使用時必須 | 使用するAnthropicモデル (推奨: `claude-3-5-sonnet-20241022`) |
+
 **APIキーの取得方法:**
-- **OpenAI**: https://platform.openai.com/api-keys
-- **Anthropic**: https://console.anthropic.com/settings/keys
+1. **OpenAI**: 
+   - https://platform.openai.com/api-keys にアクセス
+   - 「Create new secret key」をクリックしてAPIキーを生成
+   - 生成されたAPIキーをコピーして `.dev.vars` に設定
+
+2. **Anthropic**: 
+   - https://console.anthropic.com/settings/keys にアクセス
+   - 「Create Key」をクリックしてAPIキーを生成
+   - 生成されたAPIキーをコピーして `.dev.vars` に設定
 
 **プロバイダーの選択:**
-- `AI_PROVIDER=openai` - OpenAI GPT-4oを使用
-- `AI_PROVIDER=anthropic` - Anthropic Claude 3.5 Sonnetを使用
+- `AI_PROVIDER=openai` - OpenAI GPT-4oを使用（高速・コスト効率良好）
+- `AI_PROVIDER=anthropic` - Anthropic Claude 3.5 Sonnetを使用（長文理解・論理推論に強い）
 
 ### 3. データベースのマイグレーション
 
@@ -265,22 +287,41 @@ wrangler d1 create webapp-production
 wrangler pages project create webapp --production-branch main
 ```
 
-### 3. 環境変数の設定
+### 3. 環境変数の設定（本番環境）
+
+Cloudflare Pagesに環境変数（シークレット）を設定します。各コマンドを実行すると、値の入力を求められます。
 
 ```bash
-# JWT Secret
+# 1. JWT Secret（ランダムな長い文字列）
 wrangler pages secret put JWT_SECRET --project-name webapp
 
-# AI Provider
+# 2. AI Provider（openai または anthropic）
 wrangler pages secret put AI_PROVIDER --project-name webapp
 
-# OpenAI
+# 3. OpenAI設定（OpenAIを使用する場合）
 wrangler pages secret put OPENAI_API_KEY --project-name webapp
 wrangler pages secret put OPENAI_MODEL --project-name webapp
 
-# Anthropic (オプション)
+# 4. Anthropic設定（Anthropicを使用する場合、オプション）
 wrangler pages secret put ANTHROPIC_API_KEY --project-name webapp
 wrangler pages secret put ANTHROPIC_MODEL --project-name webapp
+```
+
+**シークレット設定時の入力例:**
+```bash
+$ wrangler pages secret put OPENAI_API_KEY --project-name webapp
+? Enter a secret value: sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+✨ Success! Uploaded secret OPENAI_API_KEY
+
+$ wrangler pages secret put OPENAI_MODEL --project-name webapp
+? Enter a secret value: gpt-4o
+✨ Success! Uploaded secret OPENAI_MODEL
+```
+
+**設定確認:**
+```bash
+# 設定済みシークレットの一覧表示（値は表示されません）
+wrangler pages secret list --project-name webapp
 ```
 
 ### 4. デプロイ
@@ -297,10 +338,25 @@ npm run deploy
 - salt + key をbase64エンコードして保存
 
 ### AI統合について
-- **OpenAI GPT-4o** と **Anthropic Claude 3.5 Sonnet** の両方に対応
-- `AI_PROVIDER`環境変数で使用するプロバイダーを選択
-- APIエラー時は自動的にモックレスポンスにフォールバック
-- 各プロバイダーのSDKを使用して統合（`openai`, `@anthropic-ai/sdk`）
+
+**統合済みAI API:**
+- ✅ **OpenAI GPT-4o** (`gpt-4o`)
+- ✅ **Anthropic Claude 3.5 Sonnet** (`claude-3-5-sonnet-20241022`)
+
+**機能:**
+- `AI_PROVIDER`環境変数で使用するプロバイダーを選択可能
+- **AI相談レポート生成**: ユーザーの悩みを分析し、サプリ・セルフケア・生活習慣改善を総合的に提案
+- **AIコーチングプラン生成**: 7日間の状態ログを分析し、今日のセルフケアメニューを提案
+- APIエラー時は自動的にモックレスポンスにフォールバック（開発・デバッグ用）
+- 各プロバイダーの公式SDKを使用（`openai`, `@anthropic-ai/sdk`）
+
+**APIキーの取得方法:**
+- **OpenAI**: https://platform.openai.com/api-keys でAPIキーを作成
+- **Anthropic**: https://console.anthropic.com/settings/keys でAPIキーを作成
+
+**推奨モデル:**
+- OpenAI: `gpt-4o` (高速・高品質・コスト効率良好)
+- Anthropic: `claude-3-5-sonnet-20241022` (長文理解・論理推論に強い)
 
 ### データベース
 - ローカル開発では`.wrangler/state/v3/d1`にSQLiteファイルが生成される
