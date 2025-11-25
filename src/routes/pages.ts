@@ -32,7 +32,7 @@ pages.get('/diagnosis', (c) => {
   </header>
 
   <main class="container" style="padding-top: 3rem; padding-bottom: 3rem;">
-    <h1 style="margin-bottom: 2rem; text-align: center;">脳活診断</h1>
+    <h1 style="margin-bottom: 2rem; text-align: center; color: var(--text-primary);">脳活診断</h1>
     
     <div id="diagnosis-wizard">
       <div class="card">
@@ -86,7 +86,7 @@ pages.get('/ai/consult', (c) => {
   </header>
 
   <main class="container" style="padding-top: 3rem;">
-    <h1 style="margin-bottom: 2rem;">AI相談</h1>
+    <h1 style="margin-bottom: 2rem; color: var(--text-primary);">AI相談</h1>
     
     <div class="card">
       <p style="color: #6b7280; margin-bottom: 1.5rem;">
@@ -283,7 +283,7 @@ pages.get('/ai/coach', (c) => {
   </header>
 
   <main class="container" style="padding-top: 3rem;">
-    <h1 style="margin-bottom: 2rem;">パーソナルコーチング</h1>
+    <h1 style="margin-bottom: 2rem; color: var(--text-primary);">パーソナルコーチング</h1>
     
     <div class="card">
       <h2 class="card-header">今日の状態を記録</h2>
