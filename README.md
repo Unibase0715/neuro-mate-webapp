@@ -111,14 +111,31 @@ npm install
 
 ### 2. 環境変数の設定
 
-`.dev.vars`ファイルを編集：
+`.dev.vars`ファイルを作成・編集：
 
 ```bash
+# JWT Secret
 JWT_SECRET=your-secret-key-here
-AI_API_KEY=your-ai-api-key
-AI_API_ENDPOINT=https://api.openai.com/v1/chat/completions
-AI_MODEL=gpt-4
+
+# AI Provider (openai or anthropic)
+AI_PROVIDER=openai
+
+# OpenAI Configuration
+OPENAI_API_KEY=your-openai-api-key-here
+OPENAI_MODEL=gpt-4o
+
+# Anthropic Configuration  
+ANTHROPIC_API_KEY=your-anthropic-api-key-here
+ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
 ```
+
+**APIキーの取得方法:**
+- **OpenAI**: https://platform.openai.com/api-keys
+- **Anthropic**: https://console.anthropic.com/settings/keys
+
+**プロバイダーの選択:**
+- `AI_PROVIDER=openai` - OpenAI GPT-4oを使用
+- `AI_PROVIDER=anthropic` - Anthropic Claude 3.5 Sonnetを使用
 
 ### 3. データベースのマイグレーション
 
@@ -218,14 +235,14 @@ curl -X POST http://localhost:3000/api/auth/signup \
 ✅ ユーザー登録・ログイン認証  
 ✅ 無料診断（スコアリングとサプリ提案）  
 ✅ 診断結果の保存（ログインユーザー）  
-✅ AI相談レポート生成（モック）  
+✅ **AI相談レポート生成（OpenAI GPT-4o / Anthropic Claude 3.5 Sonnet統合済み）**  
+✅ **AI コーチングプラン生成（OpenAI GPT-4o / Anthropic Claude 3.5 Sonnet統合済み）**  
 ✅ コーチングログ保存  
 ✅ プラン別アクセス制御  
 ✅ レスポンシブデザイン  
 
 ## 🔮 未実装機能
 
-- ⏳ 実際のAI API統合（OpenAI/Anthropic）
 - ⏳ Stripe決済連携
 - ⏳ メール通知機能
 - ⏳ プラン変更機能
@@ -251,8 +268,19 @@ wrangler pages project create webapp --production-branch main
 ### 3. 環境変数の設定
 
 ```bash
+# JWT Secret
 wrangler pages secret put JWT_SECRET --project-name webapp
-wrangler pages secret put AI_API_KEY --project-name webapp
+
+# AI Provider
+wrangler pages secret put AI_PROVIDER --project-name webapp
+
+# OpenAI
+wrangler pages secret put OPENAI_API_KEY --project-name webapp
+wrangler pages secret put OPENAI_MODEL --project-name webapp
+
+# Anthropic (オプション)
+wrangler pages secret put ANTHROPIC_API_KEY --project-name webapp
+wrangler pages secret put ANTHROPIC_MODEL --project-name webapp
 ```
 
 ### 4. デプロイ
@@ -268,9 +296,11 @@ npm run deploy
 - PBKDF2アルゴリズムで100,000回のイテレーション
 - salt + key をbase64エンコードして保存
 
-### AIモックについて
-- 開発環境では`AI_API_KEY=mock-api-key`で固定のモックレスポンスを返す
-- 本番環境ではOpenAI APIなどの実際のAIサービスと連携
+### AI統合について
+- **OpenAI GPT-4o** と **Anthropic Claude 3.5 Sonnet** の両方に対応
+- `AI_PROVIDER`環境変数で使用するプロバイダーを選択
+- APIエラー時は自動的にモックレスポンスにフォールバック
+- 各プロバイダーのSDKを使用して統合（`openai`, `@anthropic-ai/sdk`）
 
 ### データベース
 - ローカル開発では`.wrangler/state/v3/d1`にSQLiteファイルが生成される
