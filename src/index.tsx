@@ -78,7 +78,7 @@ app.get('/', (c) => {
           <div class="card" style="border: 1px solid var(--border-color);">
             <div class="badge badge-success" style="margin-bottom: 1rem;">無料プラン</div>
             <h3 style="margin-bottom: 1rem; color: var(--text-primary);">基本診断</h3>
-            <ul style="margin-bottom: 1.5rem; line-height: 1.8; color: var(--text-secondary);">
+            <ul style="margin-bottom: 1.5rem; line-height: 1.6; color: var(--text-secondary); font-size: 0.9rem;">
               <li>✓ 選択式の簡易診断</li>
               <li>✓ サプリとセルフケアの提案</li>
               <li>✓ 結果の表示（ログイン不要）</li>
@@ -90,7 +90,7 @@ app.get('/', (c) => {
             <div class="badge" style="margin-bottom: 1rem; background: var(--primary-color); color: var(--bg-primary);">おすすめ</div>
             <h3 style="margin-bottom: 0.5rem; color: var(--text-primary); font-size: 1.5rem;">ベーシックプラン</h3>
             <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">AI詳細分析</p>
-            <ul style="margin-bottom: 1.5rem; line-height: 1.8; color: var(--text-secondary);">
+            <ul style="margin-bottom: 1.5rem; line-height: 1.6; color: var(--text-secondary); font-size: 0.9rem;">
               <li>✓ 無料プランの全機能</li>
               <li>✓ テキストでの詳細相談</li>
               <li>✓ AIによる総合レポート</li>
@@ -103,7 +103,7 @@ app.get('/', (c) => {
             <div class="badge" style="margin-bottom: 1rem; background: var(--secondary-color); color: var(--text-primary);">プレミアム</div>
             <h3 style="margin-bottom: 0.5rem; color: var(--text-primary); font-size: 1.5rem;">プレミアムプラン</h3>
             <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">パーソナルコーチング</p>
-            <ul style="margin-bottom: 1.5rem; line-height: 1.8; color: var(--text-secondary);">
+            <ul style="margin-bottom: 1.5rem; line-height: 1.6; color: var(--text-secondary); font-size: 0.9rem;">
               <li>✓ ベーシックプランの全機能</li>
               <li>✓ 日々の状態ログ記録</li>
               <li>✓ 毎日のメニュー自動生成</li>
