@@ -55,7 +55,7 @@ app.get('/', (c) => {
       <div class="grid grid-2" style="margin-bottom: 4rem;">
         <div class="card">
           <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">🎯 総合的な分析</h3>
-          <p style="color: var(--text-secondary);">慢性コリ・痛み、脳疲労、睡眠、美容、パフォーマンス、メンタルの観点から総合的に分析します。</p>
+          <p style="color: var(--text-secondary);">慢性コリ・痛み、脳疲労、睡眠、美容、パフォーマンス、メンタルなどの観点から分析します。</p>
         </div>
         <div class="card">
           <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">💊 最適なサプリ提案</h3>
