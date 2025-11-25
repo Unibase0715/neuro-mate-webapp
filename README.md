@@ -316,7 +316,15 @@ $ wrangler pages secret put OPENAI_API_KEY --project-name webapp
 $ wrangler pages secret put OPENAI_MODEL --project-name webapp
 ? Enter a secret value: gpt-4o
 ✨ Success! Uploaded secret OPENAI_MODEL
+
+# GPT-5やその他のモデルへの切り替えも同じ手順で可能
+# 例: GPT-5がリリースされた場合
+$ wrangler pages secret put OPENAI_MODEL --project-name webapp
+? Enter a secret value: gpt-5
+✨ Success! Uploaded secret OPENAI_MODEL
 ```
+
+**対応モデル:** `gpt-4o`, `gpt-4o-mini`, `gpt-5` (リリース後), `o1`, `o1-mini`
 
 **設定確認:**
 ```bash
@@ -340,11 +348,16 @@ npm run deploy
 ### AI統合について
 
 **統合済みAI API:**
-- ✅ **OpenAI GPT-4o** (`gpt-4o`)
+- ✅ **OpenAI GPT-4o** (`gpt-4o`, `gpt-4o-mini`)
+- ✅ **OpenAI GPT-5** - リリース時に環境変数変更のみで対応可能
+- ✅ **OpenAI o1/o1-mini** - 推論特化モデル
 - ✅ **Anthropic Claude 3.5 Sonnet** (`claude-3-5-sonnet-20241022`)
+- ✅ **将来の新モデル** - 環境変数変更のみで自動対応
 
 **機能:**
 - `AI_PROVIDER`環境変数で使用するプロバイダーを選択可能
+- `OPENAI_MODEL`/`ANTHROPIC_MODEL`で使用するモデルを指定
+- **コード変更不要でモデル切り替え可能** - 環境変数のみで対応
 - **AI相談レポート生成**: ユーザーの悩みを分析し、サプリ・セルフケア・生活習慣改善を総合的に提案
 - **AIコーチングプラン生成**: 7日間の状態ログを分析し、今日のセルフケアメニューを提案
 - APIエラー時は自動的にモックレスポンスにフォールバック（開発・デバッグ用）
@@ -356,7 +369,23 @@ npm run deploy
 
 **推奨モデル:**
 - OpenAI: `gpt-4o` (高速・高品質・コスト効率良好)
+- OpenAI: `gpt-5` (GPT-5リリース後、最高品質)
 - Anthropic: `claude-3-5-sonnet-20241022` (長文理解・論理推論に強い)
+
+**モデル切り替え例:**
+```bash
+# GPT-4oからGPT-5への切り替え（GPT-5リリース後）
+# 1. 環境変数を変更
+OPENAI_MODEL=gpt-5
+
+# 2. サーバー再起動（開発環境）
+pm2 restart neuro-mate
+
+# 3. 本番環境
+wrangler pages secret put OPENAI_MODEL --project-name webapp
+# 入力: gpt-5
+npm run deploy
+```
 
 ### データベース
 - ローカル開発では`.wrangler/state/v3/d1`にSQLiteファイルが生成される

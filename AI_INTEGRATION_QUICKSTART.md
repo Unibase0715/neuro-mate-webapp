@@ -13,11 +13,18 @@
 
 ### Option A: OpenAI GPT-4o（推奨）
 
+**対応モデル:**
+- ✅ `gpt-4o` - 現在推奨（高速・高品質）
+- ✅ `gpt-4o-mini` - 軽量版（コスト重視）
+- ✅ `gpt-5` - GPT-5リリース時に自動対応
+- ✅ `o1`, `o1-mini` - 推論特化モデル
+
 **特徴:**
 - ✅ 高速（応答時間: 1-3秒）
 - ✅ コスト効率良好（$0.01-0.05/相談）
 - ✅ JSON出力フォーマットに対応
 - ✅ 日本語の理解と生成に優れている
+- ✅ **将来のモデル（GPT-5等）にも自動対応**
 
 **取得手順:**
 1. https://platform.openai.com/ にアクセス
@@ -79,16 +86,32 @@ EOF
 **実際の値に置き換えてください:**
 
 ```bash
-# OpenAIを使用する場合
+# OpenAI GPT-4oを使用する場合（現在推奨）
 AI_PROVIDER=openai
 OPENAI_API_KEY=sk-proj-ABC123...（実際のAPIキー）
 OPENAI_MODEL=gpt-4o
+
+# OpenAI GPT-5を使用する場合（リリース後）
+AI_PROVIDER=openai
+OPENAI_API_KEY=sk-proj-ABC123...（実際のAPIキー）
+OPENAI_MODEL=gpt-5
+
+# OpenAI o1（推論モデル）を使用する場合
+AI_PROVIDER=openai
+OPENAI_API_KEY=sk-proj-ABC123...（実際のAPIキー）
+OPENAI_MODEL=o1
 
 # Anthropicを使用する場合
 AI_PROVIDER=anthropic
 ANTHROPIC_API_KEY=sk-ant-XYZ789...（実際のAPIキー）
 ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
 ```
+
+**モデル選択のヒント:**
+- **コスト重視**: `gpt-4o-mini` または `gpt-4o`
+- **品質重視**: `gpt-4o` または `gpt-5`（リリース後）
+- **推論重視**: `o1` または `o1-mini`
+- **長文理解**: `claude-3-5-sonnet-20241022`
 
 ### モックモード（開発用）
 
@@ -99,6 +122,50 @@ AI_PROVIDER=mock
 ```
 
 モックモードでは、実際のAI APIを呼び出さず、固定のレスポンスを返します。
+
+### 🔄 モデル切り替え（GPT-5対応）
+
+**重要:** GPT-5やその他の新しいモデルがリリースされた際、**コード変更は一切不要**です。環境変数を変更するだけで即座に対応できます。
+
+**切り替え手順:**
+
+1. **`.dev.vars`ファイルを編集:**
+   ```bash
+   # 現在
+   OPENAI_MODEL=gpt-4o
+   
+   # GPT-5リリース後
+   OPENAI_MODEL=gpt-5
+   ```
+
+2. **サーバーを再起動:**
+   ```bash
+   pm2 restart neuro-mate
+   ```
+
+3. **動作確認:**
+   - AI相談を実行して新しいモデルが使用されていることを確認
+
+**本番環境でのモデル変更:**
+
+```bash
+# Cloudflare Pagesのシークレットを更新
+wrangler pages secret put OPENAI_MODEL --project-name webapp
+# 入力: gpt-5
+
+# 再デプロイ（環境変数の反映）
+npm run deploy
+```
+
+**対応モデル一覧:**
+
+| モデル名 | 特徴 | 推奨用途 |
+|---------|------|---------|
+| `gpt-4o` | 現在推奨（高速・高品質） | 一般的な用途 |
+| `gpt-4o-mini` | 軽量版（コスト削減） | 大量処理 |
+| `gpt-5` | 次世代（リリース予定） | 最高品質が必要な場合 |
+| `o1` | 推論特化 | 複雑な分析 |
+| `o1-mini` | 推論軽量版 | コスト重視の推論 |
 
 ## 3. 動作確認
 
