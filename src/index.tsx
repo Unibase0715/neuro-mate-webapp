@@ -37,10 +37,13 @@ app.get('/', (c) => {
     <div class="container" style="padding-top: 3rem; padding-bottom: 3rem;">
       {/* Hero section */}
       <div style="text-align: center; margin-bottom: 4rem;">
-        <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem; color: var(--primary-color);">
+        <div style="margin-bottom: 1.5rem;">
+          <img src="/static/unibase-logo.png" alt="脳活labo Unibase" style="height: 80px; margin-bottom: 1rem;" />
+        </div>
+        <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem; color: var(--primary-color); text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
           脳活AIヘルスアドバイザー<br />Neuro mate
         </h1>
-        <p style="font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 2rem;">
+        <p style="font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 700px; margin-left: auto; margin-right: auto;">
           あなたの症状・生活習慣から、最適なサプリとセルフケアを提案します
         </p>
         <a href="/diagnosis" class="btn btn-primary btn-lg">
@@ -70,42 +73,44 @@ app.get('/', (c) => {
 
       {/* Plans */}
       <div style="margin-bottom: 4rem;">
-        <h2 style="text-align: center; font-size: 2rem; margin-bottom: 2rem;">プラン一覧</h2>
+        <h2 style="text-align: center; font-size: 2rem; margin-bottom: 2rem; color: var(--text-primary);">プラン一覧</h2>
         <div class="grid grid-2">
-          <div class="card">
+          <div class="card" style="border: 1px solid var(--border-color);">
             <div class="badge badge-success" style="margin-bottom: 1rem;">無料プラン</div>
-            <h3 style="margin-bottom: 1rem;">基本診断</h3>
-            <ul style="margin-bottom: 1.5rem; line-height: 1.8;">
+            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">基本診断</h3>
+            <ul style="margin-bottom: 1.5rem; line-height: 1.8; color: var(--text-secondary);">
               <li>✓ 選択式の簡易診断</li>
               <li>✓ サプリとセルフケアの提案</li>
               <li>✓ 結果の表示（ログイン不要）</li>
             </ul>
-            <p style="font-size: 2rem; font-weight: bold;">無料</p>
+            <p style="font-size: 2rem; font-weight: bold; color: var(--text-primary);">無料</p>
           </div>
           
-          <div class="card" style="border: 2px solid var(--primary-color);">
-            <div class="badge" style="margin-bottom: 1rem; background: var(--primary-color); color: var(--bg-primary);">ベーシックプラン</div>
-            <h3 style="margin-bottom: 1rem;">AI詳細分析</h3>
-            <ul style="margin-bottom: 1.5rem; line-height: 1.8;">
+          <div class="card" style="border: 2px solid var(--primary-color); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(201, 184, 130, 0.1) 100%);">
+            <div class="badge" style="margin-bottom: 1rem; background: var(--primary-color); color: var(--bg-primary);">おすすめ</div>
+            <h3 style="margin-bottom: 0.5rem; color: var(--primary-color); font-size: 1.5rem;">ベーシックプラン</h3>
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">AI詳細分析</p>
+            <ul style="margin-bottom: 1.5rem; line-height: 1.8; color: var(--text-secondary);">
               <li>✓ 無料プランの全機能</li>
               <li>✓ テキストでの詳細相談</li>
               <li>✓ AIによる総合レポート</li>
               <li>✓ 月3回まで相談可能</li>
             </ul>
-            <p style="font-size: 2rem; font-weight: bold; color: var(--primary-color);">¥1,580<span style="font-size: 1rem;">/月</span></p>
+            <p style="font-size: 2.5rem; font-weight: bold; color: var(--primary-color);">¥1,580<span style="font-size: 1rem; font-weight: normal;">/月</span></p>
           </div>
           
-          <div class="card" style="border: 2px solid var(--secondary-color);">
-            <div class="badge-warning badge" style="margin-bottom: 1rem; background: var(--secondary-color); color: var(--text-primary);">プレミアムプラン</div>
-            <h3 style="margin-bottom: 1rem;">パーソナルコーチング</h3>
-            <ul style="margin-bottom: 1.5rem; line-height: 1.8;">
+          <div class="card" style="border: 2px solid var(--secondary-color); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(139, 115, 85, 0.1) 100%);">
+            <div class="badge" style="margin-bottom: 1rem; background: var(--secondary-color); color: var(--text-primary);">プレミアム</div>
+            <h3 style="margin-bottom: 0.5rem; color: var(--secondary-color); font-size: 1.5rem;">プレミアムプラン</h3>
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">パーソナルコーチング</p>
+            <ul style="margin-bottom: 1.5rem; line-height: 1.8; color: var(--text-secondary);">
               <li>✓ ベーシックプランの全機能</li>
               <li>✓ 日々の状態ログ記録</li>
               <li>✓ 毎日のメニュー自動生成</li>
               <li>✓ 週次フィードバック</li>
               <li>✓ 相談回数無制限</li>
             </ul>
-            <p style="font-size: 2rem; font-weight: bold; color: var(--secondary-color);">¥3,980<span style="font-size: 1rem;">/月</span></p>
+            <p style="font-size: 2.5rem; font-weight: bold; color: var(--secondary-color);">¥3,980<span style="font-size: 1rem; font-weight: normal;">/月</span></p>
           </div>
         </div>
       </div>

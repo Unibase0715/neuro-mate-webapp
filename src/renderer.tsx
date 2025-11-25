@@ -14,8 +14,8 @@ export const renderer = jsxRenderer(({ children, title }) => {
           <div class="container">
             <div class="header-content">
               <a href="/" class="logo">
-                <img src="https://www.genspark.ai/api/files/s/mKoUk92v" alt="Unibase Logo" style="height: 50px;" onerror="this.style.display='none'" />
-                <span>Neuro mate</span>
+                <img src="/static/unibase-logo.png" alt="脳活labo Unibase" class="logo-image" />
+                <span class="logo-text">Neuro mate</span>
               </a>
               <div id="auth-buttons">
                 <a href="/login" class="btn btn-outline btn-sm">ログイン</a>

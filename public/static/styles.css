@@ -1,14 +1,16 @@
-/* Neuro mate - Styles */
+/* Neuro mate - Styles (Unibase Brand) */
 
 :root {
   --primary-color: #c9b882;
   --primary-dark: #b8a572;
   --secondary-color: #8b7355;
+  --accent-gold: #d4af37;
   --success-color: #10b981;
   --warning-color: #f59e0b;
   --danger-color: #ef4444;
   --text-primary: #ffffff;
   --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
   --bg-primary: #434342;
   --bg-secondary: #2d2d2c;
   --bg-card: #5a5a58;
@@ -63,14 +65,25 @@ header {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.logo:hover {
+  opacity: 0.9;
+}
+
+.logo-image {
+  height: 45px;
+  width: auto;
+  object-fit: contain;
+}
+
+.logo-text {
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--primary-color);
-  text-decoration: none;
-}
-
-.logo img {
-  height: 50px;
+  letter-spacing: 0.5px;
   width: auto;
 }
 
@@ -90,11 +103,15 @@ header {
 
 .btn-primary {
   background: var(--primary-color);
-  color: white;
+  color: var(--bg-primary);
+  font-weight: 600;
+  box-shadow: var(--shadow);
 }
 
 .btn-primary:hover {
   background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
 }
 
 .btn-secondary {
@@ -106,6 +123,11 @@ header {
   background: transparent;
   border: 2px solid var(--primary-color);
   color: var(--primary-color);
+}
+
+.btn-outline:hover {
+  background: var(--primary-color);
+  color: var(--bg-primary);
 }
 
 .btn-sm {
