@@ -2,9 +2,11 @@
 export type Bindings = {
   DB: D1Database;
   JWT_SECRET: string;
-  AI_API_KEY: string;
-  AI_API_ENDPOINT: string;
-  AI_MODEL: string;
+  AI_PROVIDER: 'openai' | 'anthropic' | 'mock';
+  OPENAI_API_KEY: string;
+  OPENAI_MODEL: string;
+  ANTHROPIC_API_KEY: string;
+  ANTHROPIC_MODEL: string;
 }
 
 // User types

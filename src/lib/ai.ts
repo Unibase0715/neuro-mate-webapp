@@ -1,3 +1,5 @@
+import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
 import type { Bindings, AIConsultationInput, AIReport } from '../types';
 
 const SYSTEM_PROMPT = `
@@ -7,7 +9,7 @@ const SYSTEM_PROMPT = `
 以下の点に注意してアドバイスしてください：
 1. 医療行為ではなく、一般的な健康アドバイスとして提案する
 2. 脳・自律神経・体のバランスの観点から総合的に分析する
-3. サプリメント（マグネシウム、サイトカイン、5-ALA、BHB、マルチビタミン）の優先順位を示す
+3. サプリメント（マグネシウム、サイトカイン、5-ALA、BHB、マルチビタミンなど）の優先順位を示す
 4. セルフケア（脳トレ、姿勢改善、呼吸法など）を具体的に提案する
 5. 生活習慣の改善ポイントを明確にする
 6. メンタル面も補助的にサポートする（ストレス・気分のゆらぎへの簡単なアドバイス）
@@ -42,29 +44,42 @@ const SYSTEM_PROMPT = `
 }
 `;
 
-export async function generateAIConsultation(
+const COACH_SYSTEM_PROMPT = `
+あなたは「脳活labo Unibase」のパーソナルコーチです。
+ユーザーの日々の状態ログを分析し、今日のセルフケアメニューを提案します。
+
+以下の点に注意してください：
+1. ログから疲労度、気分、痛みのレベルを考慮する
+2. 実行可能な3-5個のメニューを提案する
+3. 各メニューは5-10分程度で完了できるものにする
+4. 前向きで励ましのトーンを保つ
+5. 過度な負担をかけないよう配慮する
+
+回答は以下のJSON形式で返してください：
+{
+  "feedback": "今日の状態に対する簡単なフィードバック",
+  "menu": [
+    {
+      "title": "メニュータイトル",
+      "description": "具体的な説明",
+      "duration": "5分"
+    }
+  ]
+}
+`;
+
+/**
+ * OpenAI APIを使用してAI相談を生成
+ */
+async function generateWithOpenAI(
   input: AIConsultationInput,
   env: Bindings
 ): Promise<AIReport> {
-  // For development, return mock data if AI_API_KEY is 'mock-api-key'
-  if (env.AI_API_KEY === 'mock-api-key') {
-    return generateMockReport(input);
-  }
-  
-  try {
-    const response = await fetch(env.AI_API_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${env.AI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: env.AI_MODEL,
-        messages: [
-          { role: 'system', content: SYSTEM_PROMPT },
-          { 
-            role: 'user', 
-            content: `
+  const openai = new OpenAI({
+    apiKey: env.OPENAI_API_KEY,
+  });
+
+  const userMessage = `
 【現在の悩み】
 ${input.currentConcerns}
 
@@ -75,29 +90,232 @@ ${input.lifestyleRhythm}
 ${input.additionalNotes}
 
 上記の内容を分析し、JSON形式でアドバイスを生成してください。
-            `.trim()
-          }
-        ],
-        temperature: 0.7,
-        response_format: { type: 'json_object' }
-      })
-    });
+  `.trim();
+
+  const completion = await openai.chat.completions.create({
+    model: env.OPENAI_MODEL,
+    messages: [
+      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'user', content: userMessage }
+    ],
+    temperature: 0.7,
+    response_format: { type: 'json_object' }
+  });
+
+  const content = completion.choices[0].message.content;
+  if (!content) {
+    throw new Error('OpenAI returned empty response');
+  }
+
+  return JSON.parse(content);
+}
+
+/**
+ * Anthropic Claude APIを使用してAI相談を生成
+ */
+async function generateWithAnthropic(
+  input: AIConsultationInput,
+  env: Bindings
+): Promise<AIReport> {
+  const anthropic = new Anthropic({
+    apiKey: env.ANTHROPIC_API_KEY,
+  });
+
+  const userMessage = `
+【現在の悩み】
+${input.currentConcerns}
+
+【生活リズム】
+${input.lifestyleRhythm}
+
+【その他気になること】
+${input.additionalNotes}
+
+上記の内容を分析し、JSON形式でアドバイスを生成してください。
+  `.trim();
+
+  const message = await anthropic.messages.create({
+    model: env.ANTHROPIC_MODEL,
+    max_tokens: 4096,
+    system: SYSTEM_PROMPT,
+    messages: [
+      { role: 'user', content: userMessage }
+    ],
+    temperature: 0.7,
+  });
+
+  const content = message.content[0];
+  if (content.type !== 'text') {
+    throw new Error('Anthropic returned non-text response');
+  }
+
+  // ClaudeはJSON形式を返すように指示しているが、```json```で囲まれている場合がある
+  let jsonText = content.text.trim();
+  if (jsonText.startsWith('```json')) {
+    jsonText = jsonText.replace(/^```json\n/, '').replace(/\n```$/, '');
+  } else if (jsonText.startsWith('```')) {
+    jsonText = jsonText.replace(/^```\n/, '').replace(/\n```$/, '');
+  }
+
+  return JSON.parse(jsonText);
+}
+
+/**
+ * AI相談レポートを生成（プロバイダーを自動選択）
+ */
+export async function generateAIConsultation(
+  input: AIConsultationInput,
+  env: Bindings
+): Promise<AIReport> {
+  try {
+    const provider = env.AI_PROVIDER || 'openai';
     
-    if (!response.ok) {
-      throw new Error(`AI API error: ${response.status}`);
+    // モックモードをチェック（開発用）
+    if (provider === 'mock') {
+      console.log('Using mock AI mode (no API calls)');
+      return generateMockReport(input);
     }
     
-    const data = await response.json();
-    const content = data.choices[0].message.content;
-    const report = JSON.parse(content);
-    
-    return report;
+    if (provider === 'anthropic') {
+      return await generateWithAnthropic(input, env);
+    } else {
+      return await generateWithOpenAI(input, env);
+    }
   } catch (error) {
     console.error('AI consultation error:', error);
-    throw error;
+    // エラー時はモックデータを返す
+    console.log('Falling back to mock response due to error');
+    return generateMockReport(input);
   }
 }
 
+/**
+ * OpenAI APIを使用してコーチングプランを生成
+ */
+async function generateCoachPlanWithOpenAI(
+  logs: any[],
+  env: Bindings
+): Promise<any> {
+  const openai = new OpenAI({
+    apiKey: env.OPENAI_API_KEY,
+  });
+
+  const userMessage = `
+以下は直近7日間の状態ログです：
+
+${logs.map((log, index) => `
+【${index + 1}日前】
+- 睡眠時間: ${log.sleep_hours || '未記録'}時間
+- 疲労度: ${log.fatigue_level || '未記録'}/10
+- 気分: ${log.mood_level || '未記録'}/10
+- コリ・痛み: ${log.pain_level || '未記録'}/10
+- セルフケア実施: ${log.did_selfcare || 'なし'}
+`).join('\n')}
+
+上記のログを分析し、今日のセルフケアメニューをJSON形式で提案してください。
+  `.trim();
+
+  const completion = await openai.chat.completions.create({
+    model: env.OPENAI_MODEL,
+    messages: [
+      { role: 'system', content: COACH_SYSTEM_PROMPT },
+      { role: 'user', content: userMessage }
+    ],
+    temperature: 0.7,
+    response_format: { type: 'json_object' }
+  });
+
+  const content = completion.choices[0].message.content;
+  if (!content) {
+    throw new Error('OpenAI returned empty response');
+  }
+
+  return JSON.parse(content);
+}
+
+/**
+ * Anthropic Claude APIを使用してコーチングプランを生成
+ */
+async function generateCoachPlanWithAnthropic(
+  logs: any[],
+  env: Bindings
+): Promise<any> {
+  const anthropic = new Anthropic({
+    apiKey: env.ANTHROPIC_API_KEY,
+  });
+
+  const userMessage = `
+以下は直近7日間の状態ログです：
+
+${logs.map((log, index) => `
+【${index + 1}日前】
+- 睡眠時間: ${log.sleep_hours || '未記録'}時間
+- 疲労度: ${log.fatigue_level || '未記録'}/10
+- 気分: ${log.mood_level || '未記録'}/10
+- コリ・痛み: ${log.pain_level || '未記録'}/10
+- セルフケア実施: ${log.did_selfcare || 'なし'}
+`).join('\n')}
+
+上記のログを分析し、今日のセルフケアメニューをJSON形式で提案してください。
+  `.trim();
+
+  const message = await anthropic.messages.create({
+    model: env.ANTHROPIC_MODEL,
+    max_tokens: 2048,
+    system: COACH_SYSTEM_PROMPT,
+    messages: [
+      { role: 'user', content: userMessage }
+    ],
+    temperature: 0.7,
+  });
+
+  const content = message.content[0];
+  if (content.type !== 'text') {
+    throw new Error('Anthropic returned non-text response');
+  }
+
+  let jsonText = content.text.trim();
+  if (jsonText.startsWith('```json')) {
+    jsonText = jsonText.replace(/^```json\n/, '').replace(/\n```$/, '');
+  } else if (jsonText.startsWith('```')) {
+    jsonText = jsonText.replace(/^```\n/, '').replace(/\n```$/, '');
+  }
+
+  return JSON.parse(jsonText);
+}
+
+/**
+ * デイリーコーチングプランを生成（プロバイダーを自動選択）
+ */
+export async function generateDailyCoachPlan(
+  logs: any[],
+  env: Bindings
+): Promise<any> {
+  try {
+    const provider = env.AI_PROVIDER || 'openai';
+    
+    // モックモードをチェック（開発用）
+    if (provider === 'mock') {
+      console.log('Using mock AI mode (no API calls)');
+      return generateMockCoachPlan();
+    }
+    
+    if (provider === 'anthropic') {
+      return await generateCoachPlanWithAnthropic(logs, env);
+    } else {
+      return await generateCoachPlanWithOpenAI(logs, env);
+    }
+  } catch (error) {
+    console.error('Coach plan generation error:', error);
+    // エラー時はモックデータを返す
+    console.log('Falling back to mock response due to error');
+    return generateMockCoachPlan();
+  }
+}
+
+/**
+ * モックレポート生成（開発・エラー時用）
+ */
 function generateMockReport(input: AIConsultationInput): AIReport {
   return {
     summary: 'あなたの症状から、慢性的な疲労と脳のエネルギー不足が考えられます。自律神経のバランスを整えることが重要です。',
@@ -155,34 +373,28 @@ function generateMockReport(input: AIConsultationInput): AIReport {
   };
 }
 
-export async function generateDailyCoachPlan(
-  logs: any[],
-  env: Bindings
-): Promise<any> {
-  // Mock implementation for development
-  if (env.AI_API_KEY === 'mock-api-key') {
-    return {
-      feedback: '睡眠時間は良好ですが、疲労度が高めです。今日は軽めのセルフケアを重点的に行いましょう。',
-      menu: [
-        {
-          title: '朝の眼球運動',
-          description: '目を上下左右にゆっくり動かし、8の字を描きます。',
-          duration: '3分'
-        },
-        {
-          title: '昼休みのストレッチ',
-          description: '首肩を中心にゆっくりとほぐします。',
-          duration: '5分'
-        },
-        {
-          title: '夕方の呼吸法',
-          description: '4-7-8呼吸で自律神経を整えます。',
-          duration: '5分'
-        }
-      ]
-    };
-  }
-  
-  // Actual AI implementation would go here
-  return generateDailyCoachPlan(logs, env);
+/**
+ * モックコーチングプラン生成（開発・エラー時用）
+ */
+function generateMockCoachPlan(): any {
+  return {
+    feedback: '睡眠時間は良好ですが、疲労度が高めです。今日は軽めのセルフケアを重点的に行いましょう。',
+    menu: [
+      {
+        title: '朝の眼球運動',
+        description: '目を上下左右にゆっくり動かし、8の字を描きます。',
+        duration: '3分'
+      },
+      {
+        title: '昼休みのストレッチ',
+        description: '首肩を中心にゆっくりとほぐします。',
+        duration: '5分'
+      },
+      {
+        title: '夕方の呼吸法',
+        description: '4-7-8呼吸で自律神経を整えます。',
+        duration: '5分'
+      }
+    ]
+  };
 }

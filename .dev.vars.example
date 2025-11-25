@@ -1,10 +1,21 @@
 # JWT Secret Key (generate a random string for production)
 JWT_SECRET=your-secret-key-here-change-this-in-production
 
-# AI API Configuration (e.g., OpenAI, Anthropic, etc.)
-AI_API_KEY=your-ai-api-key-here
-AI_API_ENDPOINT=https://api.openai.com/v1/chat/completions
-AI_MODEL=gpt-4
+# AI Provider (openai, anthropic, or mock)
+# - openai: Use OpenAI GPT-4o (requires OPENAI_API_KEY)
+# - anthropic: Use Anthropic Claude 3.5 Sonnet (requires ANTHROPIC_API_KEY)
+# - mock: Use mock responses (no API calls, no cost)
+AI_PROVIDER=openai
+
+# OpenAI Configuration
+# Get your API key from: https://platform.openai.com/api-keys
+OPENAI_API_KEY=your-openai-api-key-here
+OPENAI_MODEL=gpt-4o
+
+# Anthropic Configuration
+# Get your API key from: https://console.anthropic.com/settings/keys
+ANTHROPIC_API_KEY=your-anthropic-api-key-here
+ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
 
 # Email Configuration (optional, for future features)
 # SMTP_HOST=smtp.example.com
