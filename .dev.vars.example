@@ -1,0 +1,13 @@
+# JWT Secret Key (generate a random string for production)
+JWT_SECRET=your-secret-key-here-change-this-in-production
+
+# AI API Configuration (e.g., OpenAI, Anthropic, etc.)
+AI_API_KEY=your-ai-api-key-here
+AI_API_ENDPOINT=https://api.openai.com/v1/chat/completions
+AI_MODEL=gpt-4
+
+# Email Configuration (optional, for future features)
+# SMTP_HOST=smtp.example.com
+# SMTP_PORT=587
+# SMTP_USER=your-email@example.com
+# SMTP_PASS=your-password
