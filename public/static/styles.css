@@ -1,19 +1,20 @@
 /* Neuro mate - Styles */
 
 :root {
-  --primary-color: #6366f1;
-  --primary-dark: #4f46e5;
-  --secondary-color: #8b5cf6;
+  --primary-color: #c9b882;
+  --primary-dark: #b8a572;
+  --secondary-color: #8b7355;
   --success-color: #10b981;
   --warning-color: #f59e0b;
   --danger-color: #ef4444;
-  --text-primary: #1f2937;
-  --text-secondary: #6b7280;
-  --bg-primary: #ffffff;
-  --bg-secondary: #f9fafb;
-  --border-color: #e5e7eb;
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;
+  --bg-primary: #434342;
+  --bg-secondary: #2d2d2c;
+  --bg-card: #5a5a58;
+  --border-color: #6b6b69;
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 }
 
 * {
@@ -26,7 +27,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
   line-height: 1.6;
   color: var(--text-primary);
-  background-color: var(--bg-secondary);
+  background-color: var(--bg-primary);
 }
 
 /* Container */
@@ -44,7 +45,7 @@ body {
 
 /* Header */
 header {
-  background: var(--bg-primary);
+  background: var(--bg-secondary);
   box-shadow: var(--shadow);
   padding: 1rem 0;
   position: sticky;
@@ -59,10 +60,18 @@ header {
 }
 
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--primary-color);
   text-decoration: none;
+}
+
+.logo img {
+  height: 50px;
+  width: auto;
 }
 
 /* Buttons */
@@ -116,11 +125,12 @@ header {
 
 /* Cards */
 .card {
-  background: var(--bg-primary);
+  background: var(--bg-card);
   border-radius: 0.75rem;
   box-shadow: var(--shadow);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  border: 1px solid var(--border-color);
 }
 
 .card-header {
@@ -151,6 +161,8 @@ header {
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   transition: border-color 0.2s;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .form-input:focus,
@@ -234,19 +246,19 @@ header {
 
 .error {
   padding: 1rem;
-  background: #fee2e2;
-  border: 1px solid #fecaca;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 0.5rem;
-  color: #991b1b;
+  color: #fca5a5;
   margin-bottom: 1rem;
 }
 
 .success {
   padding: 1rem;
-  background: #d1fae5;
-  border: 1px solid #a7f3d0;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
   border-radius: 0.5rem;
-  color: #065f46;
+  color: #6ee7b7;
   margin-bottom: 1rem;
 }
 

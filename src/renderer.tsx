@@ -13,7 +13,10 @@ export const renderer = jsxRenderer(({ children, title }) => {
         <header>
           <div class="container">
             <div class="header-content">
-              <a href="/" class="logo">🧠 Neuro mate</a>
+              <a href="/" class="logo">
+                <img src="https://www.genspark.ai/api/files/s/mKoUk92v" alt="Unibase Logo" style="height: 50px;" onerror="this.style.display='none'" />
+                <span>Neuro mate</span>
+              </a>
               <div id="auth-buttons">
                 <a href="/login" class="btn btn-outline btn-sm">ログイン</a>
                 <a href="/signup" class="btn btn-primary btn-sm">新規登録</a>
@@ -27,7 +30,7 @@ export const renderer = jsxRenderer(({ children, title }) => {
           {children}
         </main>
         
-        <footer style="margin-top: 4rem; padding: 2rem 0; background: #f9fafb; text-align: center; color: #6b7280;">
+        <footer style="margin-top: 4rem; padding: 2rem 0; background: var(--bg-secondary); text-align: center; color: var(--text-secondary); border-top: 1px solid var(--border-color);">
           <div class="container">
             <p>&copy; 2025 脳活labo Unibase - Neuro mate. All rights reserved.</p>
           </div>

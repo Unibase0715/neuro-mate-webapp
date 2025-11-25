@@ -37,10 +37,10 @@ app.get('/', (c) => {
     <div class="container" style="padding-top: 3rem; padding-bottom: 3rem;">
       {/* Hero section */}
       <div style="text-align: center; margin-bottom: 4rem;">
-        <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem; color: #6366f1;">
+        <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem; color: var(--primary-color);">
           脳活AIヘルスアドバイザー<br />Neuro mate
         </h1>
-        <p style="font-size: 1.25rem; color: #6b7280; margin-bottom: 2rem;">
+        <p style="font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 2rem;">
           あなたの症状・生活習慣から、最適なサプリとセルフケアを提案します
         </p>
         <a href="/diagnosis" class="btn btn-primary btn-lg">
@@ -51,19 +51,19 @@ app.get('/', (c) => {
       {/* Features */}
       <div class="grid grid-2" style="margin-bottom: 4rem;">
         <div class="card">
-          <h3 style="color: #6366f1; margin-bottom: 0.5rem;">🎯 総合的な分析</h3>
+          <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">🎯 総合的な分析</h3>
           <p>慢性コリ・痛み、脳疲労、睡眠、美容、パフォーマンス、メンタルの観点から総合的に分析します。</p>
         </div>
         <div class="card">
-          <h3 style="color: #6366f1; margin-bottom: 0.5rem;">💊 最適なサプリ提案</h3>
+          <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">💊 最適なサプリ提案</h3>
           <p>マグネシウム、サイトカイン、5-ALA、BHB、マルチビタミンから、あなたに合ったサプリを提案。</p>
         </div>
         <div class="card">
-          <h3 style="color: #6366f1; margin-bottom: 0.5rem;">🧘 セルフケア指導</h3>
+          <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">🧘 セルフケア指導</h3>
           <p>脳トレ、呼吸法、ストレッチなど、今日から始められるセルフケアメニューをご提案。</p>
         </div>
         <div class="card">
-          <h3 style="color: #6366f1; margin-bottom: 0.5rem;">📊 AI パーソナル分析</h3>
+          <h3 style="color: var(--primary-color); margin-bottom: 0.5rem;">📊 AI パーソナル分析</h3>
           <p>有料プランでは、AIがあなたの状態を詳しく分析し、パーソナライズされたアドバイスを提供。</p>
         </div>
       </div>
@@ -83,8 +83,8 @@ app.get('/', (c) => {
             <p style="font-size: 2rem; font-weight: bold;">無料</p>
           </div>
           
-          <div class="card" style="border: 2px solid #6366f1;">
-            <div class="badge" style="margin-bottom: 1rem;">ベーシックプラン</div>
+          <div class="card" style="border: 2px solid var(--primary-color);">
+            <div class="badge" style="margin-bottom: 1rem; background: var(--primary-color); color: var(--bg-primary);">ベーシックプラン</div>
             <h3 style="margin-bottom: 1rem;">AI詳細分析</h3>
             <ul style="margin-bottom: 1.5rem; line-height: 1.8;">
               <li>✓ 無料プランの全機能</li>
@@ -92,11 +92,11 @@ app.get('/', (c) => {
               <li>✓ AIによる総合レポート</li>
               <li>✓ 月3回まで相談可能</li>
             </ul>
-            <p style="font-size: 2rem; font-weight: bold;">¥2,980<span style="font-size: 1rem;">/月</span></p>
+            <p style="font-size: 2rem; font-weight: bold; color: var(--primary-color);">¥1,580<span style="font-size: 1rem;">/月</span></p>
           </div>
           
-          <div class="card" style="border: 2px solid #8b5cf6;">
-            <div class="badge-warning badge" style="margin-bottom: 1rem; background: #8b5cf6;">プレミアムプラン</div>
+          <div class="card" style="border: 2px solid var(--secondary-color);">
+            <div class="badge-warning badge" style="margin-bottom: 1rem; background: var(--secondary-color); color: var(--text-primary);">プレミアムプラン</div>
             <h3 style="margin-bottom: 1rem;">パーソナルコーチング</h3>
             <ul style="margin-bottom: 1.5rem; line-height: 1.8;">
               <li>✓ ベーシックプランの全機能</li>
@@ -105,7 +105,7 @@ app.get('/', (c) => {
               <li>✓ 週次フィードバック</li>
               <li>✓ 相談回数無制限</li>
             </ul>
-            <p style="font-size: 2rem; font-weight: bold;">¥4,980<span style="font-size: 1rem;">/月</span></p>
+            <p style="font-size: 2rem; font-weight: bold; color: var(--secondary-color);">¥3,980<span style="font-size: 1rem;">/月</span></p>
           </div>
         </div>
       </div>

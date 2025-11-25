@@ -18,7 +18,10 @@ pages.get('/diagnosis', (c) => {
   <header>
     <div class="container">
       <div class="header-content">
-        <a href="/" class="logo">🧠 Neuro mate</a>
+        <a href="/" class="logo">
+          <img src="https://www.genspark.ai/api/files/s/mKoUk92v" alt="Unibase Logo" style="height: 50px;" onerror="this.style.display='none'" />
+          <span>Neuro mate</span>
+        </a>
         <div id="auth-buttons">
           <a href="/login" class="btn btn-outline btn-sm">ログイン</a>
           <a href="/signup" class="btn btn-primary btn-sm">新規登録</a>
@@ -37,8 +40,8 @@ pages.get('/diagnosis', (c) => {
           <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
             <span>ステップ <span id="current-step">1</span> / 6</span>
           </div>
-          <div style="height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden;">
-            <div id="progress-bar" style="height: 100%; width: 16.67%; background: #6366f1; transition: width 0.3s;"></div>
+          <div style="height: 8px; background: var(--bg-secondary); border-radius: 4px; overflow: hidden;">
+            <div id="progress-bar" style="height: 100%; width: 16.67%; background: var(--primary-color); transition: width 0.3s;"></div>
           </div>
         </div>
         
