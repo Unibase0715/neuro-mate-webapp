@@ -86,7 +86,7 @@ app.get('/', (c) => {
       <div style="margin-top: 4rem;">
         <div class="card" style="border: 2px solid var(--primary-color); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(201, 184, 130, 0.1) 100%); text-align: center; padding: 2.5rem;">
           <h2 style="font-size: 1.75rem; margin-bottom: 1rem; color: var(--text-primary);">
-            実店舗会員の方へ
+            店舗会員の方へ
           </h2>
           <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
             こちらからアカウント登録してサービスをご利用ください
