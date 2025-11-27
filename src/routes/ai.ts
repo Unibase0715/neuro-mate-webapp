@@ -5,31 +5,13 @@ import type { Bindings, JWTPayload, AIConsultationInput, CoachLog } from '../typ
 
 const ai = new Hono<{ Bindings: Bindings }>();
 
-// AI Consultation (Basic plan) - POST /consult
-ai.post('/consult', authMiddleware, requirePlan(['basic', 'premium']), async (c) => {
+// AI Consultation - POST /consult (All registered users, no limits)
+ai.post('/consult', authMiddleware, async (c) => {
   try {
     const user = c.get('user') as JWTPayload;
     const input: AIConsultationInput = await c.req.json();
     
-    // Check monthly consultation limit for basic plan
-    if (user.plan === 'basic') {
-      const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
-      
-      const usage = await c.env.DB.prepare(
-        'SELECT count FROM consultation_usage WHERE user_id = ? AND month = ?'
-      ).bind(user.userId, currentMonth).first();
-      
-      const currentCount = usage?.count as number || 0;
-      const limit = 3; // Basic plan limit
-      
-      if (currentCount >= limit) {
-        return c.json({ 
-          error: `月${limit}回の相談上限に達しました。来月または、プレミアムプランへのアップグレードをご検討ください。` 
-        }, 429);
-      }
-    }
-    
-    // Generate AI consultation
+    // Generate AI consultation (no limits, no plan restrictions)
     const report = await generateAIConsultation(input, c.env);
     
     // Save to database
@@ -43,18 +25,6 @@ ai.post('/consult', authMiddleware, requirePlan(['basic', 'premium']), async (c)
     
     if (!dbResult.success) {
       throw new Error('Failed to save report');
-    }
-    
-    // Update consultation usage
-    if (user.plan === 'basic') {
-      const currentMonth = new Date().toISOString().slice(0, 7);
-      
-      await c.env.DB.prepare(`
-        INSERT INTO consultation_usage (user_id, month, count) 
-        VALUES (?, ?, 1)
-        ON CONFLICT(user_id, month) 
-        DO UPDATE SET count = count + 1, updated_at = CURRENT_TIMESTAMP
-      `).bind(user.userId, currentMonth).run();
     }
     
     return c.json({
@@ -89,8 +59,8 @@ ai.get('/consult/history', authMiddleware, async (c) => {
   }
 });
 
-// Save daily coach log (Premium plan)
-ai.post('/coach/log', authMiddleware, requirePlan(['premium']), async (c) => {
+// Save daily coach log (All registered users)
+ai.post('/coach/log', authMiddleware, async (c) => {
   try {
     const user = c.get('user') as JWTPayload;
     const log: CoachLog = await c.req.json();
@@ -129,8 +99,8 @@ ai.post('/coach/log', authMiddleware, requirePlan(['premium']), async (c) => {
   }
 });
 
-// Get coach logs
-ai.get('/coach/log', authMiddleware, requirePlan(['premium']), async (c) => {
+// Get coach logs (All registered users)
+ai.get('/coach/log', authMiddleware, async (c) => {
   try {
     const user = c.get('user') as JWTPayload;
     const limit = parseInt(c.req.query('limit') || '7');
@@ -148,8 +118,8 @@ ai.get('/coach/log', authMiddleware, requirePlan(['premium']), async (c) => {
   }
 });
 
-// Generate daily plan (Premium plan)
-ai.post('/coach/plan', authMiddleware, requirePlan(['premium']), async (c) => {
+// Generate daily plan (All registered users)
+ai.post('/coach/plan', authMiddleware, async (c) => {
   try {
     const user = c.get('user') as JWTPayload;
     

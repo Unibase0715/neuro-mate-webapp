@@ -67,51 +67,33 @@ app.get('/', (c) => {
         </div>
         <div class="card">
           <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">📊 AI パーソナル分析</h3>
-          <p style="color: var(--text-secondary);">有料プランでは、AIがあなたの状態を詳しく分析し、パーソナライズされたアドバイスを提供。</p>
+          <p style="color: var(--text-secondary);">会員登録するだけで、AIがあなたの状態を詳しく分析し、パーソナライズされたアドバイスを提供。</p>
         </div>
       </div>
 
-      {/* Plans */}
+      {/* Registration CTA */}
       <div style="margin-bottom: 4rem;">
-        <h2 style="text-align: center; font-size: 2rem; margin-bottom: 2rem; color: var(--text-primary);">プラン一覧</h2>
-        <div class="grid grid-2">
-          <div class="card" style="border: 1px solid var(--border-color);">
-            <div class="badge badge-success" style="margin-bottom: 1rem;">無料プラン</div>
-            <h3 style="margin-bottom: 1rem; color: var(--text-primary);">基本診断</h3>
-            <ul style="margin-bottom: 1.5rem; line-height: 1.6; color: var(--text-secondary); font-size: 0.9rem;">
-              <li>✓ 選択式の簡易診断</li>
-              <li>✓ サプリとセルフケアの提案</li>
-              <li>✓ 結果の表示（ログイン不要）</li>
-            </ul>
-            <p style="font-size: 2rem; font-weight: bold; color: var(--text-primary);">無料</p>
-          </div>
-          
-          <div class="card" style="border: 2px solid var(--primary-color); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(201, 184, 130, 0.1) 100%);">
-            <div class="badge" style="margin-bottom: 1rem; background: var(--primary-color); color: var(--bg-primary);">おすすめ</div>
-            <h3 style="margin-bottom: 0.5rem; color: var(--text-primary); font-size: 1.5rem;">ベーシックプラン</h3>
-            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">AI詳細分析</p>
-            <ul style="margin-bottom: 1.5rem; line-height: 1.6; color: var(--text-secondary); font-size: 0.9rem;">
-              <li>✓ 無料プランの全機能</li>
-              <li>✓ テキストでの詳細相談</li>
-              <li>✓ AIによる総合レポート</li>
-              <li>✓ 月3回まで相談可能</li>
-            </ul>
-            <p style="font-size: 2.5rem; font-weight: bold; color: var(--text-primary);">¥1,580<span style="font-size: 1rem; font-weight: normal; color: var(--text-secondary);">/月</span></p>
-          </div>
-          
-          <div class="card" style="border: 2px solid var(--secondary-color); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(139, 115, 85, 0.1) 100%);">
-            <div class="badge" style="margin-bottom: 1rem; background: var(--secondary-color); color: var(--text-primary);">プレミアム</div>
-            <h3 style="margin-bottom: 0.5rem; color: var(--text-primary); font-size: 1.5rem;">プレミアムプラン</h3>
-            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">パーソナルコーチング</p>
-            <ul style="margin-bottom: 1.5rem; line-height: 1.6; color: var(--text-secondary); font-size: 0.9rem;">
-              <li>✓ ベーシックプランの全機能</li>
+        <div class="card" style="border: 2px solid var(--primary-color); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(201, 184, 130, 0.1) 100%); text-align: center; padding: 3rem;">
+          <h2 style="font-size: 2rem; margin-bottom: 1rem; color: var(--text-primary);">
+            ✨ 今すぐ無料で始める
+          </h2>
+          <p style="font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            会員登録するだけで、すべての機能を無料でご利用いただけます。<br />
+            AI相談、パーソナルコーチング、回数制限なし。
+          </p>
+          <div style="margin-bottom: 2rem;">
+            <h3 style="color: var(--text-primary); margin-bottom: 1rem;">✓ すべての機能が使い放題</h3>
+            <ul style="display: inline-block; text-align: left; color: var(--text-secondary); line-height: 2;">
+              <li>✓ 無制限のAI相談</li>
+              <li>✓ パーソナルコーチング</li>
               <li>✓ 日々の状態ログ記録</li>
               <li>✓ 毎日のメニュー自動生成</li>
-              <li>✓ 週次フィードバック</li>
-              <li>✓ 相談回数無制限</li>
+              <li>✓ サプリ＆セルフケア提案</li>
             </ul>
-            <p style="font-size: 2.5rem; font-weight: bold; color: var(--text-primary);">¥3,980<span style="font-size: 1rem; font-weight: normal; color: var(--text-secondary);">/月</span></p>
           </div>
+          <a href="/signup" class="btn btn-primary btn-lg">
+            今すぐ無料登録
+          </a>
         </div>
       </div>
     </div>
@@ -234,38 +216,27 @@ app.get('/dashboard', (c) => {
           
           content.innerHTML = \`
             <div class="card">
-              <h2>プラン: <span class="badge">\${currentUser.plan}</span></h2>
-              <p class="mt-4">メールアドレス: \${currentUser.email}</p>
+              <h2 style="color: var(--text-primary);">ようこそ、Neuro mateへ！</h2>
+              <p class="mt-4" style="color: var(--text-secondary);">メールアドレス: \${currentUser.email}</p>
+              <p style="color: var(--text-secondary); margin-top: 0.5rem;">すべての機能を無料でご利用いただけます 🎉</p>
             </div>
             
             <div class="grid grid-2 mt-6">
-              <a href="/diagnosis" class="card" style="text-decoration: none; color: inherit;">
-                <h3 style="color: #6366f1;">🎯 無料診断</h3>
-                <p>簡易診断であなたに合ったサプリとセルフケアを見つける</p>
+              <a href="/diagnosis" class="card" style="text-decoration: none; color: inherit; border: 2px solid var(--primary-color);">
+                <h3 style="color: var(--primary-color);">🎯 無料診断</h3>
+                <p style="color: var(--text-secondary);">簡易診断であなたに合ったサプリとセルフケアを見つける</p>
               </a>
               
-              \${currentUser.plan === 'basic' || currentUser.plan === 'premium' ? \`
-                <a href="/ai/consult" class="card" style="text-decoration: none; color: inherit;">
-                  <h3 style="color: #6366f1;">💬 AI相談</h3>
-                  <p>詳しい状況をテキストで相談し、AIからアドバイスを受ける</p>
-                </a>
-              \` : ''}
+              <a href="/ai/consult" class="card" style="text-decoration: none; color: inherit; border: 2px solid var(--primary-color);">
+                <h3 style="color: var(--primary-color);">💬 AI相談（無制限）</h3>
+                <p style="color: var(--text-secondary);">詳しい状況をテキストで相談し、AIからアドバイスを受ける</p>
+              </a>
               
-              \${currentUser.plan === 'premium' ? \`
-                <a href="/ai/coach" class="card" style="text-decoration: none; color: inherit;">
-                  <h3 style="color: #8b5cf6;">📊 コーチング</h3>
-                  <p>毎日の状態を記録して、パーソナライズされたメニューを取得</p>
-                </a>
-              \` : ''}
+              <a href="/ai/coach" class="card" style="text-decoration: none; color: inherit; border: 2px solid var(--primary-color);">
+                <h3 style="color: var(--primary-color);">📊 パーソナルコーチング</h3>
+                <p style="color: var(--text-secondary);">毎日の状態を記録して、パーソナライズされたメニューを取得</p>
+              </a>
             </div>
-            
-            \${currentUser.plan === 'free' ? \`
-              <div class="card mt-6" style="background: #eff6ff; border: 2px solid #6366f1;">
-                <h3 style="color: #6366f1;">プランをアップグレード</h3>
-                <p>ベーシックプラン以上で、AIによる詳細な分析とアドバイスを受けられます。</p>
-                <button class="btn btn-primary mt-4">アップグレードする（準備中）</button>
-              </div>
-            \` : ''}
           \`;
         });
       `}</script>

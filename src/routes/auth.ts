@@ -30,10 +30,10 @@ auth.post('/signup', async (c) => {
     // Hash password
     const passwordHash = await hashPassword(password);
     
-    // Create user
+    // Create user with premium plan by default
     const result = await c.env.DB.prepare(
       'INSERT INTO users (email, password_hash, plan) VALUES (?, ?, ?)'
-    ).bind(email, passwordHash, 'free').run();
+    ).bind(email, passwordHash, 'premium').run();
     
     if (!result.success) {
       return c.json({ error: 'Failed to create user' }, 500);
@@ -43,7 +43,7 @@ auth.post('/signup', async (c) => {
     
     // Generate JWT token
     const token = await signToken(
-      { userId, email, plan: 'free' },
+      { userId, email, plan: 'premium' },
       c.env.JWT_SECRET
     );
     
@@ -53,7 +53,7 @@ auth.post('/signup', async (c) => {
       user: {
         id: userId,
         email,
-        plan: 'free'
+        plan: 'premium'
       }
     }, 201);
   } catch (error) {
