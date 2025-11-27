@@ -4,18 +4,20 @@
 
 ## 🎯 プロジェクト概要
 
-**Neuro mate**は、脳活labo Unibaseの実店舗会員専用AIヘルスアドバイザーです。ユーザーの症状・生活習慣・美容・パフォーマンス・メンタル状態を総合的に分析し、最適なサプリメントとセルフケアを提案します。
+**Neuro mate**は、脳活labo Unibaseの実店舗会員専用AIヘルスアドバイザーです。会員IDで認証し、AI相談を通じて最適なサプリメントとセルフケアの提案を受けられます。
 
 ### 主な機能
 
-- 🎯 **簡易診断**: 選択式の診断でサプリとセルフケアを提案
-- 💬 **AI詳細相談**: テキストで詳しく相談し、AIが総合レポートを生成
+- 🆔 **会員ID認証**: Googleスプレッドシートによる会員管理（例：UNI-001）
+- 💬 **AI健康相談**: 文章形式で自由に相談内容を入力
   - ✨ **OpenAI GPT-4o** または **Anthropic Claude 3.5 Sonnet** 統合済み
-  - 自動サプリスコアリング・セルフケア提案・生活習慣改善アドバイス
-- 📊 **パーソナルコーチング**: 日々の状態を記録し、パーソナライズされたメニューを自動生成
-  - ✨ AIが7日間のログを分析し、今日のセルフケアメニューを提案
-- 🔐 **認証システム**: JWT認証による安全なユーザー管理
-- 💾 **データ永続化**: Cloudflare D1を使用したデータベース管理
+  - お悩み・生活習慣・追加情報を詳しく分析
+- 📊 **総合分析レポート**: AIが分析結果を生成
+  - サプリメント提案（スコア付き）
+  - セルフケアメニュー
+  - 総合アドバイス
+- 🔄 **思考中ログ**: AIが分析している過程をリアルタイム表示
+- 📝 **相談履歴の自動保存**: Googleスプレッドシートに記録
 - 🏪 **実店舗会員専用**: 脳活labo Unibase実店舗会員向けサービス
 
 ## 🌐 公開URL
@@ -23,26 +25,46 @@
 - **開発環境**: https://3000-ioaiupa7405j1zb7bvv74-b237eb32.sandbox.novita.ai
 - **本番環境**: デプロイ後に追加予定
 
+## 📱 ページ構成
+
+### 1. トップページ (`/`)
+- 会員ID入力フォーム（例：UNI-001）
+- 脳活labo Unibaseのブランディング
+- 会員認証システム
+
+### 2. 相談ページ (`/consult`)
+- 質問1: どういったお悩みでお困りですか？
+- 質問2: 普段の生活について教えてください
+- 質問3: その他、伝えておきたいこと（任意）
+- 文章形式の自由入力フォーム
+
+### 3. 結果ページ (`/result`)
+- 思考中アニメーション＋リアルタイムログ表示
+- AI分析結果の表示
+  - 総合分析サマリー
+  - おすすめサプリメント（スコア付き）
+  - セルフケアメニュー
+- 相談履歴の自動保存確認
+
 ## 🏗️ 技術スタック
 
 ### バックエンド
 - **フレームワーク**: Hono v4
 - **ランタイム**: Cloudflare Workers/Pages
-- **データベース**: Cloudflare D1 (SQLite)
-- **認証**: JWT (jose)
-- **パスワードハッシュ**: Web Crypto API (PBKDF2)
+- **会員管理**: Google Sheets API（会員リスト・相談履歴）
 - **AI統合**: OpenAI GPT-4o / Anthropic Claude 3.5 Sonnet
 
 ### フロントエンド
 - **テンプレートエンジン**: Hono JSX
-- **スタイリング**: カスタムCSS（レスポンシブデザイン）
-- **JavaScript**: Vanilla JS（認証、API通信）
+- **スタイリング**: カスタムCSS（洗練されたダークテーマ）
+- **JavaScript**: Vanilla JS（ページ遷移、API通信、アニメーション）
+- **UX**: 3ページ構成のシンプルなフロー
 
 ### デザイン
 - **ブランドカラー**: #434342（ダークグレー）
 - **アクセントカラー**: #c9b882（ゴールド）
 - **ロゴ**: 脳活labo Unibase公式ロゴ使用
-- **テーマ**: ダークモード、高級感のあるデザイン
+- **テーマ**: ダークモード、高級感のあるデザイン、フェードインアニメーション
 
 ### 開発ツール
 - **ビルドツール**: Vite
@@ -54,56 +76,56 @@
 ```
 webapp/
 ├── src/
-│   ├── index.tsx              # メインアプリケーション
+│   ├── index.tsx              # メインアプリケーション（3ページ統合）
 │   ├── renderer.tsx           # HTMLレンダラー
 │   ├── routes/
-│   │   ├── auth.ts           # 認証API
-│   │   ├── diagnosis.ts      # 診断API
-│   │   ├── ai.ts             # AI相談・コーチングAPI
+│   │   ├── chat.ts           # 会員ID認証・AI相談API
 │   │   └── pages.ts          # フロントエンドページルート
-│   ├── middleware/
-│   │   └── auth.ts           # 認証ミドルウェア
 │   ├── lib/
-│   │   ├── jwt.ts            # JWT処理
-│   │   ├── password.ts       # パスワードハッシュ
-│   │   ├── diagnosis.ts      # 診断ロジック
-│   │   └── ai.ts             # AI統合
+│   │   ├── sheets.ts         # Google Sheets API連携
+│   │   └── ai.ts             # AI統合（OpenAI/Anthropic）
 │   └── types/
 │       └── index.ts          # TypeScript型定義
 ├── public/
 │   └── static/
-│       ├── app.js            # フロントエンドJS
-│       ├── diagnosis.js      # 診断ウィザードJS
-│       └── styles.css        # スタイルシート
-├── migrations/
-│   └── 0001_initial_schema.sql  # データベーススキーマ
+│       ├── styles.css        # スタイルシート
+│       └── unibase-logo.png  # ロゴ画像
 ├── .dev.vars                 # 開発環境変数
-├── wrangler.toml             # Cloudflare設定
+├── wrangler.jsonc            # Cloudflare設定
 ├── package.json              # 依存関係
 └── ecosystem.config.cjs      # PM2設定
 ```
 
-## 🗄️ データベース設計
+## 📊 Googleスプレッドシート連携
 
-### テーブル一覧
+### スプレッドシート構成
 
-1. **users**: ユーザー情報
-   - email, password_hash, plan (free/basic/premium)
+**URL**: https://docs.google.com/spreadsheets/d/1sXkkcOQ4iKLkemKCriLELZsms5d0jSoZ-17LimuyC_E/edit
 
-2. **diagnosis_results**: 診断結果
-   - user_id, answers_json, result_json
+#### シート1: 会員リスト
+| 列 | 項目 | 説明 |
+|----|------|------|
+| C | member_id | 会員ID（例：UNI-001） |
+| D | name | 会員名 |
+| E | status | ステータス（active/inactive） |
+| F | memo | 備考 |
 
-3. **ai_reports**: AI相談レポート
-   - user_id, input_text, report_json
+#### 相談履歴シート
+| 列 | 項目 | 説明 |
+|----|------|------|
+| A | timestamp | 相談日時 |
+| B | member_id | 会員ID |
+| C | member_name | 会員名 |
+| D | consultation_type | 相談種別 |
+| E | content | 相談内容 |
+| F | ai_response | AI応答 |
 
-4. **coach_logs**: コーチングログ（プレミアムプラン）
-   - user_id, log_date, sleep_hours, fatigue_level, mood_level, pain_level
+### 会員管理フロー
 
-5. **subscriptions**: サブスクリプション管理
-   - user_id, plan, status, stripe_customer_id
-
-6. **consultation_usage**: 相談回数制限管理
-   - user_id, month, count
+1. **会員登録**: スタッフがスプレッドシートに会員情報を追加
+2. **会員認証**: ユーザーが会員IDを入力してログイン
+3. **退会処理**: スタッフがstatusを`inactive`に変更
+4. **相談履歴**: AI相談の内容と結果が自動保存
 
 ## 🚀 セットアップ手順
 
@@ -119,17 +141,17 @@ npm install
 `.dev.vars`ファイルを作成・編集：
 
 ```bash
-# JWT Secret (ランダムな文字列を設定)
-JWT_SECRET=your-secret-key-here
+# Google Sheets API
+GOOGLE_API_KEY=AIzaSyCage46YisHNIR_j5I6nwyzgZK0KZrjl5U
 
-# AI Provider (openai または anthropic)
-AI_PROVIDER=openai
+# AI Provider (openai または anthropic または mock)
+AI_PROVIDER=mock
 
-# OpenAI Configuration
+# OpenAI Configuration (AI_PROVIDER=openaiの場合)
 OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 OPENAI_MODEL=gpt-4o
 
-# Anthropic Configuration (オプション: Anthropicを使用する場合)
+# Anthropic Configuration (AI_PROVIDER=anthropicの場合)
 ANTHROPIC_API_KEY=sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
 ```
@@ -138,8 +160,8 @@ ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
 
 | 変数名 | 必須/オプション | 説明 |
 |--------|----------------|------|
-| `JWT_SECRET` | **必須** | JWT トークンの署名に使用する秘密鍵。ランダムな長い文字列を設定 |
-| `AI_PROVIDER` | **必須** | 使用するAIプロバイダー (`openai` または `anthropic`) |
+| `GOOGLE_API_KEY` | **必須** | Google Sheets APIキー（会員管理用） |
+| `AI_PROVIDER` | **必須** | 使用するAIプロバイダー (`openai` / `anthropic` / `mock`) |
 | `OPENAI_API_KEY` | OpenAI使用時必須 | OpenAIのAPIキー (https://platform.openai.com/api-keys) |
 | `OPENAI_MODEL` | OpenAI使用時必須 | 使用するOpenAIモデル (推奨: `gpt-4o`) |
 | `ANTHROPIC_API_KEY` | Anthropic使用時必須 | AnthropicのAPIキー (https://console.anthropic.com/settings/keys) |
@@ -159,16 +181,14 @@ ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
 **プロバイダーの選択:**
 - `AI_PROVIDER=openai` - OpenAI GPT-4oを使用（高速・コスト効率良好）
 - `AI_PROVIDER=anthropic` - Anthropic Claude 3.5 Sonnetを使用（長文理解・論理推論に強い）
+- `AI_PROVIDER=mock` - モックレスポンス使用（開発・テスト用）
 
-### 3. データベースのマイグレーション
+### 3. Googleスプレッドシートの準備
 
-```bash
-# ローカル開発環境
-npm run db:migrate:local
-
-# 本番環境（要：Cloudflare D1作成）
-npm run db:migrate:prod
-```
+1. **共有設定**: スプレッドシートを「リンクを知る全員が閲覧可能」に設定
+2. **相談履歴シート作成**: 新しいシートを追加し、名前を「相談履歴」に設定
+3. **ヘッダー設定**: A1～F1に以下を入力
+   - `timestamp`, `member_id`, `member_name`, `consultation_type`, `content`, `ai_response`
 
 ### 4. ビルド
 
@@ -208,102 +228,105 @@ curl -X POST http://localhost:3000/api/auth/signup \
 
 ## 📋 API エンドポイント
 
-### 認証 (`/api/auth`)
-- `POST /signup` - 新規登録
-- `POST /login` - ログイン
-- `GET /me` - 現在のユーザー情報取得
-- `POST /logout` - ログアウト
+### 会員認証 (`/api/chat`)
+- `POST /verify` - 会員ID検証
+  - リクエスト: `{ "member_id": "UNI-001" }`
+  - レスポンス: `{ "success": true, "member": { "member_id": "UNI-001", "name": "高見拓人" } }`
 
-### 診断 (`/api/diagnosis`)
-- `POST /run` - 診断実行
-- `GET /history` - 診断履歴取得（要認証）
-
-### AI相談 (`/api/ai`)
-- `POST /consult` - AI相談（登録ユーザー、無制限）
-- `GET /consult/history` - 相談履歴取得
-- `POST /coach/log` - 日次ログ保存（登録ユーザー）
-- `GET /coach/log` - ログ取得
-- `POST /coach/plan` - 今日のメニュー生成（登録ユーザー）
+### AI相談 (`/api/chat`)
+- `POST /consult` - AI健康相談
+  - リクエスト: `{ "member_id", "member_name", "currentConcerns", "lifestyleRhythm", "additionalNotes" }`
+  - レスポンス: `{ "success": true, "report": { "summary", "supplements", "selfCare" } }`
+  - 相談内容は自動的にGoogleスプレッドシートに保存
 
 ## 🏪 サービス形態
 
 ### 実店舗会員専用サービス
 **脳活labo Unibase の実店舗会員の方専用のWebサービスです。**
 
-アカウント登録後、以下のすべての機能をご利用いただけます：
+会員ID認証後、以下の機能をご利用いただけます：
 
-- ✅ 選択式の簡易診断
-- ✅ **AI詳細相談（無制限）**
-- ✅ **パーソナルコーチング**
-- ✅ **日々の状態ログ記録**
-- ✅ **毎日のメニュー自動生成**
-- ✅ サプリとセルフケアの提案
-- ✅ 診断結果と相談履歴の保存
+- ✅ **会員ID認証システム**（Googleスプレッドシート連携）
+- ✅ **AI健康相談**（無制限）
+- ✅ **文章形式の自由入力フォーム**
+- ✅ **思考中ログのリアルタイム表示**
+- ✅ **総合分析レポート**（サプリ・セルフケア提案）
+- ✅ **相談履歴の自動保存**（Googleスプレッドシート）
 
 **対象:** 脳活labo Unibase 実店舗会員  
+**認証:** 会員ID（例：UNI-001）  
 **利用制限:** なし
 
-## 🎨 主な画面
+## 🎨 ユーザーフロー
 
-1. **トップページ** (`/`): サービス機能紹介と会員登録CTA
-2. **診断ページ** (`/diagnosis`): 6ステップの診断ウィザード
-3. **ログイン** (`/login`): メール・パスワード認証
-4. **サインアップ** (`/signup`): 新規ユーザー登録
-5. **ダッシュボード** (`/dashboard`): マイページ
-6. **AI相談** (`/ai/consult`): テキスト相談フォーム
-7. **コーチング** (`/ai/coach`): 日次ログと毎日のメニュー
+### 基本フロー
+```
+トップページ（会員ID入力）
+    ↓
+会員認証（Googleスプレッドシート照会）
+    ↓
+相談ページ（3つの質問に文章で回答）
+    ↓
+結果ページ（思考中ログ → AI分析結果表示）
+    ↓
+相談履歴自動保存（Googleスプレッドシート）
+```
 
-## 🧪 テスト済み機能
+### 退会処理
+- スタッフがGoogleスプレッドシートのstatusを`inactive`に変更
+- 次回ログイン時から利用不可
 
-✅ ユーザー登録・ログイン認証  
-✅ 無料診断（スコアリングとサプリ提案）  
-✅ 診断結果の保存（ログインユーザー）  
-✅ **AI相談レポート生成（OpenAI GPT-4o / Anthropic Claude 3.5 Sonnet統合済み）**  
-✅ **AI コーチングプラン生成（OpenAI GPT-4o / Anthropic Claude 3.5 Sonnet統合済み）**  
-✅ コーチングログ保存  
-✅ **全機能無料アクセス（登録ユーザー）**  
-✅ レスポンシブデザイン  
+## 🧪 実装済み機能
 
-## 🔮 未実装機能
+✅ **会員ID認証システム**（Googleスプレッドシート連携）  
+✅ **3ページ構成のUI**（トップ → 相談 → 結果）  
+✅ **文章形式の自由入力フォーム**  
+✅ **思考中アニメーション＋リアルタイムログ**  
+✅ **AI相談レポート生成**（OpenAI/Anthropic/Mock）  
+✅ **サプリメント提案**（スコアリング機能付き）  
+✅ **セルフケアメニュー提案**  
+✅ **相談履歴の自動保存**（Googleスプレッドシート）  
+✅ **洗練されたダークテーマデザイン**  
+✅ **フェードインアニメーション**  
+✅ **レスポンシブデザイン**
+
+## 🔮 今後の拡張可能性
 
 - ⏳ メール通知機能
-- ⏳ メール通知機能
-- ⏳ プラン変更機能
-- ⏳ パスワードリセット
-- ⏳ プロフィール編集
+- ⏳ 相談履歴の閲覧機能
+- ⏳ サプリメント在庫連携
 - ⏳ ECサイト連携（サプリ購入）
+- ⏳ 定期相談リマインダー
 
 ## 🚀 デプロイ手順（Cloudflare Pages）
 
-### 1. D1データベースの作成
+### 事前準備
 
-```bash
-wrangler d1 create webapp-production
-# database_idをwrangler.tomlに設定
-```
+1. **Cloudflare API Key設定**: Deploy タブで API キーを設定
+2. **Google Sheets準備**: 共有設定と相談履歴シートの作成を完了
 
-### 2. Cloudflare Pagesプロジェクト作成
+### 1. Cloudflare Pagesプロジェクト作成
 
 ```bash
 wrangler pages project create webapp --production-branch main
 ```
 
-### 3. 環境変数の設定（本番環境）
+### 2. 環境変数の設定（本番環境）
 
-Cloudflare Pagesに環境変数（シークレット）を設定します。各コマンドを実行すると、値の入力を求められます。
+Cloudflare Pagesに環境変数（シークレット）を設定します：
 
 ```bash
-# 1. JWT Secret（ランダムな長い文字列）
-wrangler pages secret put JWT_SECRET --project-name webapp
+# 1. Google Sheets API Key
+wrangler pages secret put GOOGLE_API_KEY --project-name webapp
 
-# 2. AI Provider（openai または anthropic）
+# 2. AI Provider（openai / anthropic / mock）
 wrangler pages secret put AI_PROVIDER --project-name webapp
 
 # 3. OpenAI設定（OpenAIを使用する場合）
 wrangler pages secret put OPENAI_API_KEY --project-name webapp
 wrangler pages secret put OPENAI_MODEL --project-name webapp
 
-# 4. Anthropic設定（Anthropicを使用する場合、オプション）
+# 4. Anthropic設定（Anthropicを使用する場合）
 wrangler pages secret put ANTHROPIC_API_KEY --project-name webapp
 wrangler pages secret put ANTHROPIC_MODEL --project-name webapp
 ```
@@ -341,10 +364,17 @@ npm run deploy
 
 ## 📝 開発メモ
 
-### パスワードハッシュについて
-- Cloudflare Workers環境ではNode.jsの`crypto`モジュールが使えないため、Web Crypto APIを使用
-- PBKDF2アルゴリズムで100,000回のイテレーション
-- salt + key をbase64エンコードして保存
+### Google Sheets API連携について
+- Fetch APIで直接Google Sheets APIを呼び出し
+- `googleapis`パッケージは不使用（Cloudflare Workers非対応のため）
+- 会員リストの照会と相談履歴の保存を実装
+- スプレッドシートの共有設定が必要
+
+### 会員管理フロー
+1. 店舗スタッフがスプレッドシートに会員情報を追加
+2. ユーザーが会員IDで認証
+3. status=activeの会員のみアクセス可能
+4. 退会時はstatusをinactiveに変更
 
 ### AI統合について
 
@@ -388,9 +418,12 @@ wrangler pages secret put OPENAI_MODEL --project-name webapp
 npm run deploy
 ```
 
-### データベース
-- ローカル開発では`.wrangler/state/v3/d1`にSQLiteファイルが生成される
-- `--local`フラグで自動的にローカルDBを使用
+### UI/UXデザイン
+- 3ページ構成のシンプルなフロー
+- 文章形式の自由入力フォーム
+- 思考中ログのリアルタイム表示
+- フェードインアニメーション
+- ダークテーマの洗練されたデザイン
 
 ## 🛠️ トラブルシューティング
 
@@ -409,11 +442,15 @@ npm install
 npm run build
 ```
 
-### データベースリセット
-```bash
-rm -rf .wrangler/state/v3/d1
-npm run db:migrate:local
-```
+### Google Sheets API エラー
+- スプレッドシートの共有設定を確認（リンクを知る全員が閲覧可能）
+- Google API Keyの権限を確認
+- スプレッドシートIDが正しいか確認
+
+### 会員IDが認証できない
+- スプレッドシートの会員リストを確認
+- member_idの列（C列）を確認
+- statusがactiveになっているか確認
 
 ## 📄 ライセンス
 
@@ -431,15 +468,13 @@ npm run db:migrate:local
 - ESLintルールに準拠
 - コミットメッセージは日本語または英語
 
-### サプリスコアリングロジック
+### テスト用会員ID
 
-各サプリメントのスコア計算は`src/lib/diagnosis.ts`で実装：
+開発・テスト用に以下の会員IDが使用可能：
 
-- **マグネシウム**: 慢性コリ(×2), 睡眠(×1.5), ストレス(×1.5)
-- **サイトカイン**: 美容(×2-2.5), 疲労回復(×2), コリ(×1.5)
-- **5-ALA**: 集中力(×3), 疲労感(×2), 運動量(×1.5)
-- **BHB**: 集中力(×2.5), 疲労感(×2), 気分ムラ(×1.5)
-- **マルチビタミン**: 食事(×2), 運動(×1.5), 美容(×1.5)
+- **UNI-001**: 高見拓人（status: active）
+- **UNI-002**: 佐藤花子（status: active）
+- その他、スプレッドシートに登録された会員ID
 
 ## 📞 サポート
 
