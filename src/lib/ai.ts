@@ -373,61 +373,113 @@ export async function generateDailyCoachPlan(
 
 /**
  * モックレポート生成（開発・エラー時用）
+ * ※本番では実際のAI（OpenAI/Anthropic）が新しいプロンプトで動作します
  */
 function generateMockReport(input: AIConsultationInput): AIReport {
+  // 入力内容から動的にストーリーを生成（簡易版）
+  const concerns = input.currentConcerns.toLowerCase();
+  const lifestyle = input.lifestyleRhythm.toLowerCase();
+  
+  // キーワード検出
+  const hasShoulderPain = concerns.includes('肩') || concerns.includes('こり');
+  const hasSleepIssue = concerns.includes('寝') || concerns.includes('眠');
+  const hasFatigue = concerns.includes('疲') || concerns.includes('だるい');
+  const isDeskWork = lifestyle.includes('デスク') || lifestyle.includes('座');
+  const hasCoffee = input.additionalNotes.toLowerCase().includes('コーヒー');
+  
+  // ストーリー生成
+  let summary = '';
+  if (isDeskWork && hasShoulderPain && hasSleepIssue) {
+    summary = `長時間のデスクワークにより、頸部・肩甲帯の筋緊張が持続し、それが硬膜を介して脳幹への血流低下を引き起こしています。これが「肩こり」だけでなく、夜間の入眠困難や朝の倦怠感として表れている状態です。さらに${hasCoffee ? 'カフェイン過多がHPA軸（視床下部-下垂体-副腎）を刺激し、' : ''}交感神経の過緊張が続いているため、副交感神経への切り替えが上手くいかず、「寝ても疲れが取れない」という悪循環に陥っています。`;
+  } else if (hasFatigue || concerns.includes('やる気') || concerns.includes('ぼーっと')) {
+    const isPMS = input.additionalNotes.toLowerCase().includes('生理');
+    summary = `慢性的な疲労感とやる気の低下は、単なる「体の疲れ」ではなく、中枢（脳・自律神経）のエネルギー代謝の低下を示唆しています。HPA軸（視床下部-下垂体-副腎）の負荷が続き、コルチゾール分泌のリズムが乱れている可能性があります。${isPMS ? 'さらに生理周期に伴うホルモン変動が自律神経の揺らぎを増幅し、副交感神経のトーン低下（迷走神経機能の減弱）として現れています。' : '午後の「頭がぼーっとする」症状は、脳のエネルギー供給（グルコース・ケトン体）の不足と、ミトコンドリア機能の低下が重なっている状態です。'}`;
+  } else {
+    summary = 'あなたの状態を中枢神経の視点から見ると、情報過多・環境ストレスによる脳幹のオーバーロードが起点となり、自律神経の調整機能が低下している状態と考えられます。';
+  }
+
+  const supplements = [];
+  const isPMS = input.additionalNotes.toLowerCase().includes('生理');
+  
+  if (hasShoulderPain || hasSleepIssue) {
+    supplements.push({
+      name: 'マグネシウム',
+      score: 92,
+      reason: `あなたの場合、筋緊張が続くことでマグネシウムの消費が増大しています。マグネシウムはNMDA受容体の調整を通じて中枢過敏化を抑え、同時に筋肉の弛緩と迷走神経のトーン回復を促します。${hasCoffee ? 'コーヒーによるカフェイン摂取もマグネシウム排泄を促進するため、' : ''}特に重要な栄養素です。`
+    });
+  }
+  
+  if (hasSleepIssue || hasFatigue || concerns.includes('やる気') || concerns.includes('ぼーっと')) {
+    supplements.push({
+      name: '5-ALA（5-アミノレブリン酸）',
+      score: 90,
+      reason: `${hasSleepIssue ? '睡眠の質の低下と朝の倦怠感' : '慢性的な疲労感と午後の集中力低下'}から、ミトコンドリアのATP産生効率が落ちていると推測されます。5-ALAはミトコンドリア機能を直接サポートし、脳のエネルギー代謝を底上げします。特に「脳の電池切れ」状態には効果的です。${isPMS ? '生理周期に伴うエネルギー変動の振れ幅を小さくする効果も期待できます。' : ''}`
+    });
+  }
+  
+  if (isPMS) {
+    supplements.push({
+      name: 'マグネシウム',
+      score: 88,
+      reason: '生理前の不調（PMS）は、エストロゲン・プロゲステロンの変動が自律神経とHPA軸に直接影響している状態です。マグネシウムはGABA受容体を介して情緒安定に寄与し、Ca/Mgバランスを整えることで生理前の自律神経の揺らぎを緩和します。'
+    });
+  }
+  
+  if (isDeskWork && (hasFatigue || hasShoulderPain)) {
+    supplements.push({
+      name: 'サイトカイン',
+      score: 85,
+      reason: 'デスクワークによる姿勢負担は、単なる筋肉疲労ではなく、ファシア（筋膜）レベルでの癒着・硬化を引き起こします。サイトカインは細胞レベルでの修復を促し、ファシアの粘弾性回復をサポートします。'
+    });
+  }
+  
+  if (hasFatigue && !hasShoulderPain) {
+    supplements.push({
+      name: 'CoQ10',
+      score: 86,
+      reason: '副交感神経の低下（迷走神経トーンの減弱）により、細胞レベルでのエネルギー産生が滞っている可能性があります。CoQ10はミトコンドリアの電子伝達系を直接サポートし、持続的なエネルギー供給を可能にします。'
+    });
+  }
+
+  const selfCare = [];
+  
+  if (hasShoulderPain) {
+    selfCare.push({
+      title: '頸部-硬膜リリース呼吸法',
+      description: `仰向けで首の後ろに小さめのクッションを置き、ゆっくり深呼吸（1分間に4-6回）を5分間。横隔膜の動きが迷走神経を刺激し、硬膜テンションを緩めます。${isDeskWork ? '1時間おきに実施すると' : ''}脳幹への血流が改善し、肩こりの根本にアプローチできます。`
+    });
+  }
+  
+  if (hasSleepIssue) {
+    selfCare.push({
+      title: '夕方の「安全系」スイッチング',
+      description: '18時以降、5分間の「4-7-8呼吸」（4秒吸って7秒止めて8秒吐く）を実施。これは腹側迷走神経を優位にし、交感神経優位の「防衛モード」から「安全モード」へ切り替えるスイッチです。就寝2時間前に行うと効果的。'
+    });
+  }
+  
+  if (hasFatigue || concerns.includes('やる気')) {
+    selfCare.push({
+      title: '朝の「覚醒スイッチ」リセット',
+      description: `起床後5分以内に、太陽光（または明るい光）を浴びながら深呼吸10回。視交叉上核（体内時計の中枢）を刺激し、コルチゾールの分泌リズムを正常化します。${isPMS ? '生理周期に関わらず、' : ''}HPA軸の負担軽減に直結します。`
+    });
+  }
+
+  if (isDeskWork) {
+    selfCare.push({
+      title: '眼球運動による脳幹調整',
+      description: '座ったまま、頭を動かさず目だけでゆっくり上下左右を見る（各方向5秒ずつ）。眼球運動は脳幹・小脳への直接入力となり、中枢の覚醒度を調整します。デスクワーク中に2時間おき実施。'
+    });
+  } else {
+    selfCare.push({
+      title: '足裏刺激による迷走神経活性化',
+      description: `外回りで歩くことが多い方向け。歩行中、意識的に足裏全体で地面を感じながら歩く（特に踵から着地）。足裏の機械受容器からの求心性入力が脳幹を刺激し、${isPMS ? '自律神経の安定化' : '迷走神経トーンの回復'}につながります。`
+    });
+  }
+
   return {
-    summary: 'あなたの症状から、慢性的な疲労と脳のエネルギー不足が考えられます。自律神経のバランスを整えることが重要です。',
-    factors: {
-      chronicPain: '長時間のデスクワークによる首肩の筋緊張と血流の低下が考えられます。',
-      beauty: '睡眠不足とストレスにより、肌のターンオーバーが乱れている可能性があります。',
-      performance: '脳のエネルギー不足により、集中力と作業効率が低下しています。'
-    },
-    supplements: [
-      {
-        name: 'BHB（ケトン体）',
-        score: 95,
-        reason: '脳のエネルギー源として即効性があり、集中力向上に効果的です。',
-        expectedEffects: ['脳機能向上', 'メンタルクリア', '持続的エネルギー']
-      },
-      {
-        name: 'マグネシウム',
-        score: 88,
-        reason: '筋肉の緊張緩和と睡眠の質向上に役立ちます。',
-        expectedEffects: ['筋肉リラックス', '睡眠改善', 'ストレス軽減']
-      },
-      {
-        name: 'サイトカイン',
-        score: 82,
-        reason: '細胞レベルでの回復を促進し、美容面もサポートします。',
-        expectedEffects: ['疲労回復', '肌質改善', 'アンチエイジング']
-      }
-    ],
-    selfCare: [
-      {
-        category: 'brainTraining',
-        title: '4-7-8呼吸法',
-        description: '4秒吸って7秒止めて8秒吐く。自律神経を整えます。',
-        duration: '5分'
-      },
-      {
-        category: 'bodycare',
-        title: '首肩ストレッチ',
-        description: '1時間ごとに肩を回し、首を左右に傾けます。',
-        duration: '3分'
-      },
-      {
-        category: 'lifestyle',
-        title: '睡眠環境改善',
-        description: '就寝90分前の入浴と寝室の温度調整を行いましょう。'
-      }
-    ],
-    lifestyleImprovements: [
-      '1時間ごとに5分の休憩を取り、軽いストレッチを行う',
-      '就寝2時間前からブルーライトを避ける',
-      '朝食でタンパク質を摂取し、血糖値を安定させる',
-      '昼休みに10分間の散歩を取り入れる'
-    ],
-    mentalSupport: '完璧を目指さず、小さな改善を積み重ねることが大切です。今日できることから始めて、自分を褒めてあげてください。少しずつ体調が整っていくことを感じられるはずです。'
+    summary,
+    supplements,
+    selfCare
   };
 }
 
