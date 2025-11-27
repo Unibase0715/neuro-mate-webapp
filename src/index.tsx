@@ -43,56 +43,56 @@ app.get('/', (c) => {
         <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem; color: var(--text-primary); text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
           脳活AIヘルスアドバイザー<br />Neuro mate
         </h1>
-        <p style="font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 700px; margin-left: auto; margin-right: auto;">
-          あなたの症状・生活習慣から、最適なサプリとセルフケアを提案します
+        <p style="font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 1rem; max-width: 700px; margin-left: auto; margin-right: auto;">
+          脳活labo Unibase 会員専用サービス
         </p>
-        <a href="/diagnosis" class="btn btn-primary btn-lg">
-          無料で脳活診断をはじめる
-        </a>
+        <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 3rem; max-width: 700px; margin-left: auto; margin-right: auto;">
+          あなたの症状・生活習慣から、AIが最適なサプリとセルフケアを提案します
+        </p>
       </div>
 
       {/* Features */}
-      <div class="grid grid-2" style="margin-bottom: 4rem;">
-        <div class="card">
-          <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">🎯 総合的な分析</h3>
-          <p style="color: var(--text-secondary);">慢性コリ・痛み、脳疲労、睡眠、美容、パフォーマンス、メンタルなどの観点から分析します。</p>
-        </div>
-        <div class="card">
-          <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">💊 最適なサプリ提案</h3>
-          <p style="color: var(--text-secondary);">様々なサプリの中から、あなたに最適なものを提案します。</p>
-        </div>
-        <div class="card">
-          <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">🧘 セルフケア指導</h3>
-          <p style="color: var(--text-secondary);">脳トレ、呼吸法、ストレッチなど、今日から始められるセルフケアメニューをご提案。</p>
-        </div>
-        <div class="card">
-          <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">📊 AI パーソナル分析</h3>
-          <p style="color: var(--text-secondary);">会員登録するだけで、AIがあなたの状態を詳しく分析し、パーソナライズされたアドバイスを提供。</p>
+      <div style="margin-bottom: 3rem;">
+        <h2 style="text-align: center; font-size: 1.75rem; margin-bottom: 2rem; color: var(--text-primary);">サービス機能</h2>
+        <div class="grid grid-2" style="gap: 1.5rem;">
+          <div class="card">
+            <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">🎯 総合的な分析</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">慢性コリ・痛み、脳疲労、睡眠、美容、パフォーマンス、メンタルなどの観点から総合的に分析します。</p>
+          </div>
+          <div class="card">
+            <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">💊 最適なサプリ提案</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">様々なサプリの中から、あなたの状態に最適なものを提案します。</p>
+          </div>
+          <div class="card">
+            <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">🧘 セルフケア指導</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">脳トレ、呼吸法、ストレッチなど、今日から始められるセルフケアメニューをご提案。</p>
+          </div>
+          <div class="card">
+            <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">💬 AI詳細相談</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">詳しい状況をテキストで相談し、AIから総合的なアドバイスを受けられます。</p>
+          </div>
+          <div class="card">
+            <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">📊 パーソナルコーチング</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">日々の状態を記録し、AIがパーソナライズされたメニューを自動生成します。</p>
+          </div>
+          <div class="card">
+            <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">📈 継続的サポート</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">診断結果や相談履歴を保存し、長期的な健康管理をサポートします。</p>
+          </div>
         </div>
       </div>
 
       {/* Registration CTA */}
-      <div style="margin-bottom: 4rem;">
-        <div class="card" style="border: 2px solid var(--primary-color); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(201, 184, 130, 0.1) 100%); text-align: center; padding: 3rem;">
-          <h2 style="font-size: 2rem; margin-bottom: 1rem; color: var(--text-primary);">
-            ✨ 今すぐ無料で始める
+      <div style="margin-top: 4rem;">
+        <div class="card" style="border: 2px solid var(--primary-color); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(201, 184, 130, 0.1) 100%); text-align: center; padding: 2.5rem;">
+          <h2 style="font-size: 1.75rem; margin-bottom: 1rem; color: var(--text-primary);">
+            会員専用サービス
           </h2>
-          <p style="font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
-            会員登録するだけで、すべての機能を無料でご利用いただけます。<br />
-            AI相談、パーソナルコーチング、回数制限なし。
+          <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+            脳活labo Unibaseの実店舗会員の方は、<br />こちらからアカウント登録してご利用ください。
           </p>
-          <div style="margin-bottom: 2rem;">
-            <h3 style="color: var(--text-primary); margin-bottom: 1rem;">✓ すべての機能が使い放題</h3>
-            <ul style="display: inline-block; text-align: left; color: var(--text-secondary); line-height: 2;">
-              <li>✓ 無制限のAI相談</li>
-              <li>✓ パーソナルコーチング</li>
-              <li>✓ 日々の状態ログ記録</li>
-              <li>✓ 毎日のメニュー自動生成</li>
-              <li>✓ サプリ＆セルフケア提案</li>
-            </ul>
-          </div>
           <a href="/signup" class="btn btn-primary btn-lg">
-            今すぐ無料登録
+            アカウント登録
           </a>
         </div>
       </div>
@@ -105,7 +105,10 @@ app.get('/signup', (c) => {
   return c.render(
     <div class="container-sm" style="padding-top: 3rem;">
       <div class="card">
-        <h2 class="card-header text-center">新規登録</h2>
+        <h2 class="card-header text-center">会員アカウント登録</h2>
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1.5rem; padding: 0 1rem;">
+          脳活labo Unibase 実店舗会員の方専用
+        </p>
         <form id="signup-form" onsubmit="handleSignup(event)">
           <div class="form-group">
             <label class="form-label">メールアドレス</label>
