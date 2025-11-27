@@ -44,7 +44,7 @@ app.get('/', (c) => {
           脳活AIヘルスアドバイザー<br />Neuro mate
         </h1>
         <p style="font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 1rem; max-width: 700px; margin-left: auto; margin-right: auto;">
-          脳活labo Unibase 会員専用サービス
+          脳活labo Unibase 実店舗会員専用サービス
         </p>
         <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 3rem; max-width: 700px; margin-left: auto; margin-right: auto;">
           あなたの症状・生活習慣から、AIが最適なサプリとセルフケアを提案します
@@ -86,10 +86,10 @@ app.get('/', (c) => {
       <div style="margin-top: 4rem;">
         <div class="card" style="border: 2px solid var(--primary-color); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(201, 184, 130, 0.1) 100%); text-align: center; padding: 2.5rem;">
           <h2 style="font-size: 1.75rem; margin-bottom: 1rem; color: var(--text-primary);">
-            会員専用サービス
+            実店舗会員の方へ
           </h2>
           <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
-            脳活labo Unibaseの実店舗会員の方は、<br />こちらからアカウント登録してご利用ください。
+            こちらからアカウント登録してサービスをご利用ください
           </p>
           <a href="/signup" class="btn btn-primary btn-lg">
             アカウント登録
@@ -221,17 +221,17 @@ app.get('/dashboard', (c) => {
             <div class="card">
               <h2 style="color: var(--text-primary);">ようこそ、Neuro mateへ！</h2>
               <p class="mt-4" style="color: var(--text-secondary);">メールアドレス: \${currentUser.email}</p>
-              <p style="color: var(--text-secondary); margin-top: 0.5rem;">すべての機能を無料でご利用いただけます 🎉</p>
+              <p style="color: var(--text-secondary); margin-top: 0.5rem;">すべての機能をご利用いただけます 🎉</p>
             </div>
             
             <div class="grid grid-2 mt-6">
               <a href="/diagnosis" class="card" style="text-decoration: none; color: inherit; border: 2px solid var(--primary-color);">
-                <h3 style="color: var(--primary-color);">🎯 無料診断</h3>
-                <p style="color: var(--text-secondary);">簡易診断であなたに合ったサプリとセルフケアを見つける</p>
+                <h3 style="color: var(--primary-color);">🎯 簡易診断</h3>
+                <p style="color: var(--text-secondary);">あなたに合ったサプリとセルフケアを見つける</p>
               </a>
               
               <a href="/ai/consult" class="card" style="text-decoration: none; color: inherit; border: 2px solid var(--primary-color);">
-                <h3 style="color: var(--primary-color);">💬 AI相談（無制限）</h3>
+                <h3 style="color: var(--primary-color);">💬 AI相談</h3>
                 <p style="color: var(--text-secondary);">詳しい状況をテキストで相談し、AIからアドバイスを受ける</p>
               </a>
               
