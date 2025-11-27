@@ -17,11 +17,6 @@ export const renderer = jsxRenderer(({ children, title }) => {
                 <img src="/static/unibase-logo.png" alt="脳活labo Unibase" class="logo-image" />
                 <span class="logo-text">Neuro mate</span>
               </a>
-              <div id="auth-buttons">
-                <a href="/login" class="btn btn-outline btn-sm">ログイン</a>
-                <a href="/signup" class="btn btn-primary btn-sm">新規登録</a>
-              </div>
-              <div id="user-info" style="display: none;"></div>
             </div>
           </div>
         </header>
@@ -35,8 +30,6 @@ export const renderer = jsxRenderer(({ children, title }) => {
             <p>&copy; 2025 脳活labo Unibase - Neuro mate. All rights reserved.</p>
           </div>
         </footer>
-        
-        <script src="/static/app.js"></script>
       </body>
     </html>
   )

@@ -27,111 +27,76 @@ app.route('', pages)
 // Frontend routes
 app.use(renderer)
 
-// Home page - Chat Interface
+// Home page - Member ID Entry
 app.get('/', (c) => {
   return c.render(
-    <div class="container" style="padding-top: 2rem; padding-bottom: 2rem; max-width: 900px;">
-      {/* Header */}
-      <div style="text-align: center; margin-bottom: 2rem;">
-        <img src="/static/unibase-logo.png" alt="脳活labo Unibase" style="height: 60px; margin-bottom: 0.5rem;" />
-        <h1 style="font-size: 1.75rem; font-weight: bold; margin-bottom: 0.5rem; color: var(--text-primary);">
-          Neuro mate - AIヘルスアドバイザー
-        </h1>
-        <p style="font-size: 0.95rem; color: var(--text-secondary);">
-          脳活labo Unibase 店舗会員専用サービス
-        </p>
-      </div>
-
-      {/* Chat Container */}
-      <div class="card" style="padding: 0; overflow: hidden;">
-        {/* Chat Messages */}
-        <div id="chat-messages" style="height: 500px; overflow-y: auto; padding: 1.5rem; background: var(--bg-secondary);">
-          <div class="chat-message ai-message">
-            <div class="message-bubble" style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 1rem; border-radius: 12px; margin-bottom: 1rem;">
-              <p style="margin-bottom: 0.5rem; color: var(--text-primary);">
-                こんにちは！脳活labo Unibaseの<strong>Neuro mate</strong>です 🧠✨
-              </p>
-              <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">
-                あなたの症状や生活習慣から、最適なサプリメントとセルフケアをご提案します。
-              </p>
-              <p style="color: var(--primary-color); font-weight: bold; margin-top: 1rem;">
-                まず、会員ID（例：UNI-001）を入力してください 📝
-              </p>
-            </div>
-          </div>
+    <div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+      <div style="max-width: 500px; width: 100%; text-align: center;">
+        <div style="margin-bottom: 3rem;">
+          <img src="/static/unibase-logo.png" alt="脳活labo Unibase" style="height: 100px; margin-bottom: 1.5rem;" />
+          <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem; color: var(--text-primary); letter-spacing: 2px;">
+            Neuro mate
+          </h1>
+          <p style="font-size: 1.125rem; color: var(--primary-color); font-weight: 600; margin-bottom: 0.5rem;">
+            AIヘルスアドバイザー
+          </p>
+          <p style="font-size: 0.95rem; color: var(--text-secondary);">
+            脳活labo Unibase 店舗会員専用
+          </p>
         </div>
 
-        {/* Input Area */}
-        <div id="input-area" style="padding: 1rem; border-top: 1px solid var(--border-color); background: var(--bg-card);">
-          <div id="member-id-input">
-            <div style="display: flex; gap: 0.5rem;">
+        <div class="card" style="padding: 3rem 2.5rem; background: linear-gradient(135deg, var(--bg-card) 0%, rgba(201, 184, 130, 0.05) 100%); border: 2px solid var(--primary-color);">
+          <h2 style="font-size: 1.5rem; margin-bottom: 2rem; color: var(--text-primary);">
+            会員認証
+          </h2>
+          <form id="member-form" onsubmit="handleMemberVerification(event)" style="text-align: left;">
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+              <label class="form-label" style="font-size: 1rem; margin-bottom: 0.75rem; display: block;">
+                会員ID
+              </label>
               <input 
                 type="text" 
                 id="member-id-field" 
                 class="form-input" 
-                placeholder="会員ID（例：UNI-001）" 
-                style="flex: 1;"
+                placeholder="UNI-001" 
+                style="font-size: 1.125rem; padding: 1rem; text-align: center; letter-spacing: 2px;"
                 maxlength="7"
+                required
+                autocomplete="off"
               />
-              <button onclick="verifyMemberId()" class="btn btn-primary">
-                確認
-              </button>
             </div>
-            <div id="member-error" style="color: #e74c3c; margin-top: 0.5rem; font-size: 0.9rem;"></div>
-          </div>
-
-          <div id="consultation-input" style="display: none;">
-            <div class="form-group" style="margin-bottom: 1rem;">
-              <label class="form-label">現在の悩み・症状</label>
-              <textarea id="concerns" class="form-input" rows="3" placeholder="例：肩こり、頭痛、睡眠の質が悪い..." style="resize: vertical;"></textarea>
-            </div>
-            <div class="form-group" style="margin-bottom: 1rem;">
-              <label class="form-label">生活リズム</label>
-              <textarea id="lifestyle" class="form-input" rows="2" placeholder="例：デスクワーク8時間、睡眠6時間..." style="resize: vertical;"></textarea>
-            </div>
-            <div class="form-group" style="margin-bottom: 1rem;">
-              <label class="form-label">その他補足情報</label>
-              <textarea id="notes" class="form-input" rows="2" placeholder="例：アレルギー、服用中の薬..." style="resize: vertical;"></textarea>
-            </div>
-            <button onclick="submitConsultation()" class="btn btn-primary" style="width: 100%;">
-              AIアドバイスを受ける
+            <div id="member-error" style="color: #e74c3c; margin-bottom: 1rem; font-size: 0.9rem; min-height: 20px;"></div>
+            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; font-size: 1.125rem; padding: 1rem;">
+              認証して相談を始める
             </button>
-          </div>
+          </form>
+        </div>
+
+        <div style="margin-top: 3rem; padding: 0 1rem;">
+          <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.6;">
+            ※ 会員IDは店舗でお渡ししたカードに記載されています<br />
+            ご不明な場合は店舗スタッフまでお問い合わせください
+          </p>
         </div>
       </div>
 
-      <script>{`
-        let currentMember = null;
-
-        function addMessage(content, isAi = true) {
-          const messagesDiv = document.getElementById('chat-messages');
-          const messageDiv = document.createElement('div');
-          messageDiv.className = isAi ? 'chat-message ai-message' : 'chat-message user-message';
-          messageDiv.innerHTML = \`
-            <div class="message-bubble" style="
-              background: \${isAi ? 'var(--bg-card)' : 'var(--primary-color)'}; 
-              border: 1px solid \${isAi ? 'var(--border-color)' : 'var(--primary-color)'}; 
-              padding: 1rem; 
-              border-radius: 12px; 
-              margin-bottom: 1rem;
-              \${!isAi ? 'margin-left: auto; max-width: 80%;' : ''}
-            ">
-              <p style="margin: 0; color: \${isAi ? 'var(--text-primary)' : '#fff'};">\${content}</p>
-            </div>
-          \`;
-          messagesDiv.appendChild(messageDiv);
-          messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        }
-
-        async function verifyMemberId() {
+      <script dangerouslySetInnerHTML={{ __html: `
+        async function handleMemberVerification(event) {
+          event.preventDefault();
+          
           const memberIdField = document.getElementById('member-id-field');
           const memberId = memberIdField.value.trim().toUpperCase();
           const errorDiv = document.getElementById('member-error');
+          const submitBtn = event.target.querySelector('button[type="submit"]');
           
           if (!memberId) {
             errorDiv.textContent = '会員IDを入力してください';
             return;
           }
+
+          submitBtn.disabled = true;
+          submitBtn.textContent = '確認中...';
+          errorDiv.textContent = '';
 
           try {
             const response = await fetch('/api/chat/verify', {
@@ -143,92 +108,27 @@ app.get('/', (c) => {
             const data = await response.json();
 
             if (data.success) {
-              currentMember = data.member;
-              addMessage(\`ようこそ、\${data.member.name || '会員様'}さん！😊\`, true);
-              addMessage(\`それでは、あなたの健康状態についてお聞かせください。\`, true);
-              
-              document.getElementById('member-id-input').style.display = 'none';
-              document.getElementById('consultation-input').style.display = 'block';
+              sessionStorage.setItem('member', JSON.stringify(data.member));
+              window.location.href = '/consult';
             } else {
               errorDiv.textContent = data.error;
+              submitBtn.disabled = false;
+              submitBtn.textContent = '認証して相談を始める';
             }
           } catch (error) {
+            console.error('Error:', error);
             errorDiv.textContent = '通信エラーが発生しました';
+            submitBtn.disabled = false;
+            submitBtn.textContent = '認証して相談を始める';
           }
         }
 
-        async function submitConsultation() {
-          const concerns = document.getElementById('concerns').value;
-          const lifestyle = document.getElementById('lifestyle').value;
-          const notes = document.getElementById('notes').value;
-
-          if (!concerns || !lifestyle) {
-            alert('現在の悩み・症状と生活リズムを入力してください');
-            return;
-          }
-
-          addMessage(\`【相談内容】\\n悩み: \${concerns}\\n生活: \${lifestyle}\${notes ? '\\n補足: ' + notes : ''}\`, false);
-          addMessage('分析中です...お待ちください ⏳', true);
-
-          try {
-            const response = await fetch('/api/chat/consult', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                member_id: currentMember.member_id,
-                member_name: currentMember.name,
-                currentConcerns: concerns,
-                lifestyleRhythm: lifestyle,
-                additionalNotes: notes
-              })
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-              const report = data.report;
-              
-              // Remove "分析中..." message
-              const messages = document.getElementById('chat-messages');
-              messages.removeChild(messages.lastChild);
-
-              // Display AI report
-              addMessage(\`📊 **総合分析結果**\\n\\n\${report.summary}\`, true);
-              
-              if (report.supplements && report.supplements.length > 0) {
-                const supplementText = report.supplements.map(s => 
-                  \`• **\${s.name}** (スコア: \${s.score}/100)\\n  \${s.reason}\`
-                ).join('\\n\\n');
-                addMessage(\`💊 **おすすめサプリメント**\\n\\n\${supplementText}\`, true);
-              }
-
-              if (report.selfCare && report.selfCare.length > 0) {
-                const selfCareText = report.selfCare.map(s => 
-                  \`• **\${s.title}**\\n  \${s.description}\`
-                ).join('\\n\\n');
-                addMessage(\`🧘 **セルフケアメニュー**\\n\\n\${selfCareText}\`, true);
-              }
-
-              addMessage('相談内容はスプレッドシートに保存されました ✅', true);
-            } else {
-              addMessage('申し訳ございません。エラーが発生しました。', true);
-            }
-          } catch (error) {
-            addMessage('通信エラーが発生しました', true);
-          }
-        }
-
-        // Allow Enter key to submit member ID
-        document.getElementById('member-id-field').addEventListener('keypress', function(e) {
-          if (e.key === 'Enter') {
-            verifyMemberId();
-          }
+        document.getElementById('member-id-field').addEventListener('input', function(e) {
+          e.target.value = e.target.value.toUpperCase();
         });
-      `}</script>
+      ` }} />
     </div>
   )
 })
-
-
 
 export default app
