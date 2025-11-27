@@ -167,155 +167,266 @@ app.get('/', (c) => {
   )
 })
 
-// ==================== CONSULTATION PAGE ====================
+// ==================== CHAT CONSULTATION PAGE ====================
 app.get('/consult', (c) => {
   return c.render(
-    <div class="container" style="padding-top: 3rem; padding-bottom: 4rem; max-width: 850px;">
-      {/* Header */}
-      <div style="text-align: center; margin-bottom: 3rem;">
-        <h1 style="font-size: 2.25rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-primary); letter-spacing: 1px;">
-          AI健康相談
-        </h1>
-        <div style="height: 3px; width: 60px; background: var(--primary-color); margin: 1rem auto;"></div>
-        <p id="welcome-message" style="font-size: 1.125rem; color: var(--primary-color); font-weight: 600; margin-top: 1rem;"></p>
-      </div>
-
-      {/* Consultation Form */}
-      <div class="card" style="padding: 3rem 2.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-        <form id="consultation-form" onsubmit="handleConsultation(event)">
-          
-          {/* Question 1 */}
-          <div style="margin-bottom: 3rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--border-color);">
-            <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.25rem;">
-              <span style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-color), #d4c190); display: flex; align-items: center; justify-content: center; color: #1f2937; font-weight: 700; font-size: 1.125rem;">1</span>
+    <>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes typing {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 1; }
+        }
+        .chat-message {
+          animation: fadeIn 0.4s ease-out;
+        }
+        .typing-indicator span {
+          display: inline-block;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: var(--primary-color);
+          animation: typing 1.4s infinite;
+        }
+        .typing-indicator span:nth-child(2) {
+          animation-delay: 0.2s;
+        }
+        .typing-indicator span:nth-child(3) {
+          animation-delay: 0.4s;
+        }
+      ` }} />
+      
+      <div style="display: flex; flex-direction: column; height: 100vh; max-width: 1000px; margin: 0 auto; background: var(--bg-primary);">
+        {/* Chat Header */}
+        <div style="background: linear-gradient(135deg, #2b2b2a 0%, #3a3a38 100%); padding: 1.5rem 2rem; border-bottom: 2px solid var(--primary-color); box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <img 
+                src="/static/unibase-logo.png" 
+                alt="脳活labo" 
+                style="height: 40px; filter: brightness(1.1);" 
+              />
               <div>
-                <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">
-                  どういったお悩みでお困りですか？
-                </h3>
-                <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
-                  具体的にどんなことで悩んでいるか、どうなりたいかを自由にお書きください。<br />
-                  <span style="color: var(--text-muted); font-size: 0.875rem;">
-                    例：肩こりがひどくて仕事に集中できない。マッサージに行っても一時的で、根本的に改善したい...
-                  </span>
-                </p>
+                <h1 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0;">
+                  Neuro mate
+                </h1>
+                <p id="member-name" style="font-size: 0.875rem; color: var(--primary-color); margin: 0;"></p>
               </div>
             </div>
-            <textarea 
-              id="concerns" 
-              class="form-input" 
-              rows="6" 
-              placeholder="ここに自由に書いてください..."
-              style="resize: vertical; font-size: 1.05rem; line-height: 1.8; padding: 1.25rem;"
-              required
-            ></textarea>
+            <a href="/" style="color: var(--text-secondary); text-decoration: none; font-size: 0.875rem; transition: color 0.3s;" onmouseover="this.style.color='var(--primary-color)'" onmouseout="this.style.color='var(--text-secondary)'">
+              ログアウト
+            </a>
           </div>
+        </div>
 
-          {/* Question 2 */}
-          <div style="margin-bottom: 3rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--border-color);">
-            <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.25rem;">
-              <span style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-color), #d4c190); display: flex; align-items: center; justify-content: center; color: #1f2937; font-weight: 700; font-size: 1.125rem;">2</span>
-              <div>
-                <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">
-                  普段の生活について教えてください
-                </h3>
-                <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
-                  睡眠時間、仕事の内容、運動習慣など、日々の生活リズムをお聞かせください。<br />
-                  <span style="color: var(--text-muted); font-size: 0.875rem;">
-                    例：デスクワークで1日8時間座りっぱなし。睡眠は6時間程度で運動はほとんどしていません...
-                  </span>
-                </p>
-              </div>
-            </div>
+        {/* Chat Messages Container */}
+        <div id="chat-messages" style="flex: 1; overflow-y: auto; padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem;">
+          {/* Initial AI greeting will be added by JavaScript */}
+        </div>
+
+        {/* Chat Input Area */}
+        <div style="background: var(--bg-secondary); padding: 1.5rem 2rem; border-top: 1px solid var(--border-color); box-shadow: 0 -2px 10px rgba(0,0,0,0.1);">
+          <form id="chat-form" onsubmit="handleSendMessage(event)" style="display: flex; gap: 1rem; align-items: flex-end;">
             <textarea 
-              id="lifestyle" 
-              class="form-input" 
-              rows="5" 
-              placeholder="ここに自由に書いてください..."
-              style="resize: vertical; font-size: 1.05rem; line-height: 1.8; padding: 1.25rem;"
-              required
+              id="user-input" 
+              placeholder="今日はどんなことが気になりますか？自由に書いてください..."
+              style="flex: 1; min-height: 56px; max-height: 150px; padding: 1rem 1.25rem; border-radius: 28px; border: 2px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); font-size: 1rem; line-height: 1.6; resize: none; transition: all 0.3s; font-family: inherit;"
+              rows="1"
+              onkeydown="handleInputKeydown(event)"
             ></textarea>
-          </div>
-
-          {/* Question 3 */}
-          <div style="margin-bottom: 3rem;">
-            <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.25rem;">
-              <span style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #9ca3af, #d1d5db); display: flex; align-items: center; justify-content: center; color: #1f2937; font-weight: 700; font-size: 1.125rem;">3</span>
-              <div>
-                <h3 style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">
-                  その他、伝えておきたいこと
-                  <span style="font-size: 0.875rem; color: var(--text-muted); font-weight: 400; margin-left: 0.5rem;">（任意）</span>
-                </h3>
-                <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
-                  アレルギー、服用中の薬、過去の病歴など、知っておいてほしい情報があればお書きください。
-                </p>
-              </div>
-            </div>
-            <textarea 
-              id="notes" 
-              class="form-input" 
-              rows="3" 
-              placeholder="特になければ空欄で大丈夫です"
-              style="resize: vertical; font-size: 1.05rem; line-height: 1.8; padding: 1.25rem;"
-            ></textarea>
-          </div>
-
-          {/* Submit Button */}
-          <div style="text-align: center;">
             <button 
               type="submit" 
-              class="btn btn-primary btn-lg" 
-              style="width: 100%; max-width: 450px; font-size: 1.25rem; padding: 1.25rem; font-weight: 600; letter-spacing: 1px; box-shadow: 0 6px 20px rgba(201, 184, 130, 0.3); transition: all 0.3s;"
+              id="send-button"
+              style="flex-shrink: 0; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-color), #d4c190); border: none; color: #1f2937; font-size: 1.5rem; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(201, 184, 130, 0.3); display: flex; align-items: center; justify-content: center; font-weight: 700;"
+              onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 6px 16px rgba(201, 184, 130, 0.4)'"
+              onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 4px 12px rgba(201, 184, 130, 0.3)'"
             >
-              AIに相談する
+              ↑
             </button>
-          </div>
-        </form>
+          </form>
+          <p style="margin-top: 0.75rem; font-size: 0.75rem; color: var(--text-muted); text-align: center;">
+            症状・生活習慣・気になることを自由にお話しください
+          </p>
+        </div>
       </div>
 
       <script dangerouslySetInnerHTML={{ __html: `
         const member = JSON.parse(sessionStorage.getItem('member') || 'null');
         if (!member) {
           window.location.href = '/';
-        } else {
-          document.getElementById('welcome-message').textContent = member.name + 'さん、こんにちは';
         }
-
-        async function handleConsultation(event) {
+        
+        document.getElementById('member-name').textContent = member.name + 'さん';
+        
+        // Chat state
+        let conversationHistory = [];
+        let isAIResponding = false;
+        
+        // Initialize chat
+        function initChat() {
+          const chatMessages = document.getElementById('chat-messages');
+          
+          // Add AI greeting
+          addMessage('ai', \`こんにちは、\${member.name}さん。\\n\\n脳活labo AIアドバイザーです。\\n\\n今日はどんなことが一番気になりますか？\\n頭の重さ・眠り・メンタル・胃腸・肩こり・美容、なんでも自由に書いてください。\\n\\nあなたの状態を脳・自律神経の視点から整理して、具体的なサポートを提案します。\`);
+        }
+        
+        // Add message to chat
+        function addMessage(role, content) {
+          const chatMessages = document.getElementById('chat-messages');
+          const messageDiv = document.createElement('div');
+          messageDiv.className = 'chat-message';
+          
+          if (role === 'user') {
+            messageDiv.style.cssText = \`
+              display: flex;
+              justify-content: flex-end;
+              margin-left: 20%;
+            \`;
+            messageDiv.innerHTML = \`
+              <div style="background: linear-gradient(135deg, var(--primary-color), #d4c190); color: #1f2937; padding: 1rem 1.5rem; border-radius: 20px 20px 4px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); max-width: 100%; word-wrap: break-word; line-height: 1.6;">
+                \${content.replace(/\\n/g, '<br>')}
+              </div>
+            \`;
+          } else {
+            messageDiv.style.cssText = \`
+              display: flex;
+              justify-content: flex-start;
+              margin-right: 20%;
+            \`;
+            messageDiv.innerHTML = \`
+              <div style="background: var(--bg-card); color: var(--text-primary); padding: 1.25rem 1.5rem; border-radius: 20px 20px 20px 4px; border: 1px solid var(--border-color); box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 100%; word-wrap: break-word; line-height: 1.8;">
+                \${content.replace(/\\n/g, '<br>')}
+              </div>
+            \`;
+          }
+          
+          chatMessages.appendChild(messageDiv);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+          
+          // Store in history
+          conversationHistory.push({ role, content });
+        }
+        
+        // Add typing indicator
+        function addTypingIndicator() {
+          const chatMessages = document.getElementById('chat-messages');
+          const typingDiv = document.createElement('div');
+          typingDiv.id = 'typing-indicator';
+          typingDiv.className = 'chat-message';
+          typingDiv.style.cssText = \`
+            display: flex;
+            justify-content: flex-start;
+            margin-right: 20%;
+          \`;
+          typingDiv.innerHTML = \`
+            <div class="typing-indicator" style="background: var(--bg-card); padding: 1rem 1.5rem; border-radius: 20px; border: 1px solid var(--border-color); display: flex; gap: 0.5rem;">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          \`;
+          chatMessages.appendChild(typingDiv);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Remove typing indicator
+        function removeTypingIndicator() {
+          const indicator = document.getElementById('typing-indicator');
+          if (indicator) {
+            indicator.remove();
+          }
+        }
+        
+        // Handle send message
+        async function handleSendMessage(event) {
           event.preventDefault();
           
-          const concerns = document.getElementById('concerns').value;
-          const lifestyle = document.getElementById('lifestyle').value;
-          const notes = document.getElementById('notes').value;
-          const submitBtn = event.target.querySelector('button[type="submit"]');
-
-          sessionStorage.setItem('consultation', JSON.stringify({
-            concerns,
-            lifestyle,
-            notes
-          }));
-
-          submitBtn.disabled = true;
-          submitBtn.textContent = 'AIが分析中...';
-          submitBtn.style.opacity = '0.7';
-
-          setTimeout(() => {
-            window.location.href = '/result';
-          }, 800);
+          if (isAIResponding) return;
+          
+          const input = document.getElementById('user-input');
+          const message = input.value.trim();
+          
+          if (!message) return;
+          
+          // Add user message
+          addMessage('user', message);
+          input.value = '';
+          input.style.height = 'auto';
+          
+          // Disable input while AI responds
+          isAIResponding = true;
+          input.disabled = true;
+          document.getElementById('send-button').disabled = true;
+          
+          // Show typing indicator
+          addTypingIndicator();
+          
+          try {
+            // Call AI chat API
+            const response = await fetch('/api/chat/message', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                member_id: member.member_id,
+                member_name: member.name,
+                message: message,
+                conversationHistory: conversationHistory
+              })
+            });
+            
+            const data = await response.json();
+            
+            removeTypingIndicator();
+            
+            if (data.success) {
+              addMessage('ai', data.reply);
+            } else {
+              addMessage('ai', 'エラーが発生しました。もう一度お試しください。');
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            removeTypingIndicator();
+            addMessage('ai', '通信エラーが発生しました。もう一度お試しください。');
+          } finally {
+            isAIResponding = false;
+            input.disabled = false;
+            document.getElementById('send-button').disabled = false;
+            input.focus();
+          }
         }
-
-        ['concerns', 'lifestyle', 'notes'].forEach(id => {
-          const el = document.getElementById(id);
-          el.addEventListener('focus', function() {
-            this.style.borderColor = 'var(--primary-color)';
-            this.style.boxShadow = '0 0 0 3px rgba(201, 184, 130, 0.1)';
-          });
-          el.addEventListener('blur', function() {
-            this.style.borderColor = 'var(--border-color)';
-            this.style.boxShadow = 'none';
-          });
+        
+        // Handle input keydown (Enter to send, Shift+Enter for new line)
+        function handleInputKeydown(event) {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            document.getElementById('chat-form').dispatchEvent(new Event('submit'));
+          }
+        }
+        
+        // Auto-resize textarea
+        const userInput = document.getElementById('user-input');
+        userInput.addEventListener('input', function() {
+          this.style.height = 'auto';
+          this.style.height = Math.min(this.scrollHeight, 150) + 'px';
         });
+        
+        // Focus and border effects
+        userInput.addEventListener('focus', function() {
+          this.style.borderColor = 'var(--primary-color)';
+          this.style.boxShadow = '0 0 0 3px rgba(201, 184, 130, 0.1)';
+        });
+        userInput.addEventListener('blur', function() {
+          this.style.borderColor = 'var(--border-color)';
+          this.style.boxShadow = 'none';
+        });
+        
+        // Initialize
+        initChat();
       ` }} />
-    </div>
+    </>
   )
 })
 

@@ -622,3 +622,344 @@ function generateMockCoachPlan(): any {
     ]
   };
 }
+
+/**
+ * Conversational Chat System Prompt
+ */
+const CHAT_SYSTEM_PROMPT = `
+あなたは「脳活labo Unibase」の専属AI脳活アドバイザーです。
+
+【チャット形式での相談対応】
+- ユーザーは自由な文章で相談を送ります。固定フォーマットはありません。
+- 1回の相談で必ず全情報を得る必要はなく、会話を重ねて理解を深めることができます。
+- ユーザーが短いメッセージ（例:「頭が重いです」）を送った場合は、丁寧に追加質問をしてください。
+
+【目的】
+- ユーザーの症状・生活習慣・感情・環境を読み取り、"なぜ今の状態になっているのか" を中枢（脳・自律神経）の視点から説明する。
+- その人に本当に合ったサプリ・セルフケア・生活環境・栄養アドバイスを提案する。
+- 点数の加算や単純なパターン分けではなく、「知識から導き出したストーリー」で個別提案する。
+- 毎回コピペのようなテンプレ回答ではなく、その人の状況に合わせて表現・内容を変える。
+
+【重要な制約】
+- 医療診断や治療行為は行わない。「生活習慣・セルフケア・栄養サポートの提案」に限定する。
+- ユーザーがすでに医療機関の治療中の場合は、それを否定せず"補完的サポート"としてふるまう。
+- 命に関わりそうな訴えには、「専門医・医療機関への相談も検討してください」と必ず添える。
+
+【世界観の中核：なぜ"脳と自律神経"なのか】
+
+1. 現代病の背景
+- 現代の慢性症状（倦怠感・頭痛・不眠・自律神経失調・慢性痛・不安感）は、「末梢の局所問題」ではなく「中枢の脆弱化」がベースにある
+- 構造：情報・環境・姿勢ストレスの過多 → 脳幹・視床下部のオーバーロード → 自律神経の破綻 → 各種慢性症状として表面化
+
+2. 自律神経は"状態変化するシステム"
+- 典型パターン：過覚醒期 → ブレーキ不全期 → 混線型（交感も副交感もおかしくなる）
+- 慢性ストレスで迷走神経トーンが落ちる → 安全感の喪失 → 頭痛・不眠・胃腸不調・情緒不安定
+
+3. ポリヴェーガル理論：安全と防衛
+- 防衛状態（交感MAX／背側迷走）下では治癒は起こりにくい
+- 施術やセルフケアの第一目標は「安全系に戻すこと」
+
+4. 脳圧と自律神経
+- 脳脊髄液（CSF）と脳血流は密接に連動し、硬膜テンションが脳幹を圧迫すると頭痛・めまい・情動不安定・睡眠障害の共通基盤になる
+
+5. HPA軸・内分泌と慢性疲労
+- 慢性疲労は「筋肉が疲れている」というより、HPA軸（視床下部-下垂体-副腎）の負荷、コルチゾール分泌異常として見る
+
+【栄養と自律神経・慢性症状の統合視点】
+
+★A：自律神経そのものに影響する栄養
+A-1 交感神経過緊張タイプ（不安・緊張・思考過多・浅い呼吸）
+- 主な栄養：マグネシウム、L-テアニン・グリシン・GABA系、ビタミンB6、オメガ3、ビタミンC
+
+A-2 副交感神経低下タイプ（疲れやすい・だるい・やる気低下）
+- 栄養：CoQ10/PQQ、ビタミンB1、L-カルニチン、鉄、ビタミンD
+
+A-3 自律神経リズム（体内時計）乱れタイプ
+- 栄養：トリプトファン/5-HTP、Mg+B6、オメガ3、5-ALA
+
+★B：慢性症状に直結する栄養
+B-1 慢性疲労・倦怠感：ビタミンB群（特にB5）、Mg、CoQ10、電解質、亜鉛・鉄
+B-2 頭痛（筋緊張性／片頭痛）：Mg（重要）、CoQ10、B2、オメガ3、GABA系
+B-3 めまい・不安定感：電解質（Na/K）、B1、オメガ3、ビタミンD、鉄
+B-4 肩こり・筋緊張：Mg、タウリン、コラーゲン+ビタミンC、水分+電解質
+B-5 便秘・消化不良：Mg、食物繊維+乳酸菌、L-グルタミン、亜鉛、B6
+
+★C：脳機能特化
+C-1 集中力低下：DHA、ALCAR、PS、B群、鉄・亜鉛
+C-2 脳疲労・ブレインフォグ：MCT、ALA、PQQ、CoQ10、クロム、亜鉛
+C-3 HPA軸異常（情緒不安定）：ビタミンC、B5、ロディオラ、Mg、鉄
+
+★D：女性特有
+D-1 PMS・PMDD：Ca/Mgバランス、B6、鉄・亜鉛、オメガ3、ビタミンE
+D-2 更年期：大豆イソフラボン、オメガ3、Mg、亜鉛、B群、ビタミンD、5-ALA
+
+★E：代謝・血糖・甲状腺
+E-1 低血糖傾向：B1、クロム、Mg、タンパク質、MCT
+E-2 甲状腺機能低下傾向：セレン、亜鉛、鉄、ヨウ素、チロシン
+
+★F：炎症・免疫
+F-1 慢性炎症：オメガ3、ビタミンD、ポリフェノール、亜鉛、Mg
+F-2 アレルギー体質：ビタミンD、Mg、亜鉛、オメガ3、プロバイオティクス、ビタミンC
+
+【応答スタイル】
+- 会話的で親しみやすく、かつ専門的な内容を含める。
+- ユーザーの状態を「ストーリー」として理解し、中枢神経の視点から説明する。
+- 必要に応じて質問を投げ、情報を補完する。
+- サプリ・セルフケア・生活環境の提案は、その人の文脈に合わせて優先順位をつける。
+- 同じ症状でも、年齢・性別・仕事・睡眠・メンタル・食生活が違えば、提案内容と表現を変える。
+
+【応答の基本構成】
+会話の流れに応じて柔軟に対応しますが、基本的には以下の要素を含めます：
+
+1. **共感・理解の表明**
+   - ユーザーの訴えをまず受け止める
+
+2. **状態の整理（中枢視点のストーリー）**
+   - なぜその症状が起きているかを脳・自律神経・内臓の視点から説明
+
+3. **具体的提案**
+   - サプリメント（最大3つ、理由付き）
+   - セルフケア（最大5つ、やり方の概要）
+   - 生活環境・行動の改善（2〜3個）
+
+4. **追加質問（必要に応じて）**
+   - 情報が不足している場合は優しく質問する
+
+応答は自然な会話形式で、段落を適切に分けて読みやすくしてください。
+`;
+
+/**
+ * チャット形式のAI応答生成（会話履歴を考慮）
+ */
+export async function generateChatResponse(
+  input: {
+    userMessage: string;
+    conversationHistory: Array<{ role: string; content: string }>;
+    memberName: string;
+  },
+  env: Bindings
+): Promise<string> {
+  try {
+    const provider = env.AI_PROVIDER || 'mock';
+    
+    // モックモードをチェック（開発用）
+    if (provider === 'mock') {
+      console.log('Using mock AI mode for chat (no API calls)');
+      return generateMockChatResponse(input);
+    }
+    
+    if (provider === 'anthropic') {
+      return await generateChatWithAnthropic(input, env);
+    } else {
+      return await generateChatWithOpenAI(input, env);
+    }
+  } catch (error) {
+    console.error('Chat response generation error:', error);
+    // エラー時はモックデータを返す
+    console.log('Falling back to mock chat response due to error');
+    return generateMockChatResponse(input);
+  }
+}
+
+/**
+ * OpenAI APIを使用してチャット応答を生成
+ */
+async function generateChatWithOpenAI(
+  input: {
+    userMessage: string;
+    conversationHistory: Array<{ role: string; content: string }>;
+    memberName: string;
+  },
+  env: Bindings
+): Promise<string> {
+  const openai = new OpenAI({
+    apiKey: env.OPENAI_API_KEY,
+  });
+
+  // Build conversation messages
+  const messages: any[] = [
+    { role: 'system', content: CHAT_SYSTEM_PROMPT }
+  ];
+
+  // Add conversation history (limit to last 10 messages to avoid token limits)
+  const recentHistory = input.conversationHistory.slice(-10);
+  for (const msg of recentHistory) {
+    messages.push({
+      role: msg.role === 'user' ? 'user' : 'assistant',
+      content: msg.content
+    });
+  }
+
+  // Add current user message
+  messages.push({
+    role: 'user',
+    content: input.userMessage
+  });
+
+  const completion = await openai.chat.completions.create({
+    model: env.OPENAI_MODEL,
+    messages,
+    temperature: 0.8,
+    max_tokens: 1500,
+  });
+
+  const content = completion.choices[0].message.content;
+  if (!content) {
+    throw new Error('OpenAI returned empty response');
+  }
+
+  return content;
+}
+
+/**
+ * Anthropic Claude APIを使用してチャット応答を生成
+ */
+async function generateChatWithAnthropic(
+  input: {
+    userMessage: string;
+    conversationHistory: Array<{ role: string; content: string }>;
+    memberName: string;
+  },
+  env: Bindings
+): Promise<string> {
+  const anthropic = new Anthropic({
+    apiKey: env.ANTHROPIC_API_KEY,
+  });
+
+  // Build conversation messages
+  const messages: any[] = [];
+
+  // Add conversation history (limit to last 10 messages)
+  const recentHistory = input.conversationHistory.slice(-10);
+  for (const msg of recentHistory) {
+    messages.push({
+      role: msg.role === 'user' ? 'user' : 'assistant',
+      content: msg.content
+    });
+  }
+
+  // Add current user message
+  messages.push({
+    role: 'user',
+    content: input.userMessage
+  });
+
+  const message = await anthropic.messages.create({
+    model: env.ANTHROPIC_MODEL,
+    max_tokens: 2048,
+    system: CHAT_SYSTEM_PROMPT,
+    messages,
+    temperature: 0.8,
+  });
+
+  const content = message.content[0];
+  if (content.type !== 'text') {
+    throw new Error('Anthropic returned non-text response');
+  }
+
+  return content.text;
+}
+
+/**
+ * モックチャット応答生成（開発・エラー時用）
+ */
+function generateMockChatResponse(input: {
+  userMessage: string;
+  conversationHistory: Array<{ role: string; content: string }>;
+  memberName: string;
+}): string {
+  const message = input.userMessage.toLowerCase();
+  
+  // キーワード検出
+  const hasShoulderPain = message.includes('肩') || message.includes('こり') || message.includes('肩こり');
+  const hasSleepIssue = message.includes('寝') || message.includes('眠') || message.includes('睡眠');
+  const hasFatigue = message.includes('疲') || message.includes('だるい') || message.includes('やる気');
+  const hasHeadache = message.includes('頭痛') || message.includes('頭が痛') || message.includes('頭が重');
+  const hasStress = message.includes('ストレス') || message.includes('不安') || message.includes('緊張');
+  const isDeskWork = message.includes('デスク') || message.includes('座') || message.includes('パソコン');
+  const hasPMS = message.includes('生理') || message.includes('PMS') || message.includes('月経');
+  
+  let response = '';
+  
+  // 共感・理解
+  if (hasSleepIssue && hasShoulderPain) {
+    response += `肩こりと睡眠の問題、お辛いですよね。この2つは実は深く関連しています。\n\n`;
+  } else if (hasFatigue) {
+    response += `慢性的な疲労感は本当につらいものです。体だけでなく、心にも負担がかかりますよね。\n\n`;
+  } else if (hasHeadache) {
+    response += `頭の重さや頭痛は、日常生活に大きく影響しますよね。まずはその背景を整理しましょう。\n\n`;
+  } else {
+    response += `ありがとうございます。お話を伺いました。\n\n`;
+  }
+  
+  // 状態の整理（中枢視点のストーリー）
+  response += `【今の状態について】\n\n`;
+  
+  if (isDeskWork && hasShoulderPain && hasSleepIssue) {
+    response += `長時間のデスクワークにより、頸部・肩甲帯の筋緊張が持続し、それが硬膜を介して脳幹への血流低下を引き起こしています。これが「肩こり」だけでなく、夜間の入眠困難や朝の倦怠感として表れている状態です。\n\n`;
+    response += `さらに交感神経の過緊張が続いているため、副交感神経への切り替えが上手くいかず、「寝ても疲れが取れない」という悪循環に陥っています。`;
+  } else if (hasFatigue || message.includes('やる気')) {
+    response += `慢性的な疲労感とやる気の低下は、単なる「体の疲れ」ではなく、中枢（脳・自律神経）のエネルギー代謝の低下を示唆しています。HPA軸（視床下部-下垂体-副腎）の負荷が続き、コルチゾール分泌のリズムが乱れている可能性があります。`;
+  } else if (hasHeadache) {
+    response += `頭の重さや頭痛は、脳脊髄液（CSF）の循環不全や硬膜テンションの増加が関係していることが多いです。これは自律神経の乱れとも密接に関連しています。`;
+  } else {
+    response += `あなたの症状を中枢神経の視点から見ると、情報過多・環境ストレスによる脳幹のオーバーロードが起点となり、自律神経の調整機能が低下している状態と考えられます。`;
+  }
+  
+  response += `\n\n`;
+  
+  // 具体的提案
+  response += `【具体的なサポート提案】\n\n`;
+  
+  // サプリメント
+  response += `■ おすすめサプリメント\n\n`;
+  if (hasShoulderPain || hasSleepIssue) {
+    response += `1. **マグネシウム**\n   筋緊張が続くことでマグネシウムの消費が増大しています。NMDA受容体の調整を通じて中枢過敏化を抑え、筋肉の弛緩と迷走神経のトーン回復を促します。\n\n`;
+  }
+  if (hasFatigue) {
+    response += `2. **5-ALA（5-アミノレブリン酸）**\n   ミトコンドリアのATP産生効率が落ちている可能性があります。5-ALAはミトコンドリア機能を直接サポートし、脳のエネルギー代謝を底上げします。「脳の電池切れ」状態に効果的です。\n\n`;
+  }
+  if (hasStress || hasPMS) {
+    response += `3. **ビタミンB6 + マグネシウム**\n   ${hasPMS ? 'PMS症状は' : 'ストレス状態では'}、GABA受容体を介した情緒安定が重要です。B6とMgの組み合わせが自律神経の揺らぎを緩和します。\n\n`;
+  }
+  
+  // セルフケア
+  response += `■ セルフケアメニュー\n\n`;
+  if (hasShoulderPain && isDeskWork) {
+    response += `1. **頸部-硬膜リリース呼吸法**（1時間おき）\n   仰向けで首後ろにクッション、深呼吸で横隔膜が硬膜を牽引し首の緊張を解放。脳幹への血流が改善します。\n\n`;
+  }
+  if (hasSleepIssue) {
+    response += `2. **4-7-8呼吸法**（就寝前）\n   4秒吸って7秒止めて8秒吐く。副交感神経を優位にし、「防衛モード」から「安全モード」へ切り替えます。\n\n`;
+  }
+  if (hasFatigue) {
+    response += `3. **自然光浴**（朝10分）\n   起床後すぐに自然光を浴びて視交叉上核をリセット。HPA軸の負担を軽減し、コルチゾール分泌のリズムを正常化します。\n\n`;
+  }
+  if (isDeskWork) {
+    response += `4. **デスク環境整備**\n   モニター目線、椅子高さ、照明を調整。前のめり姿勢による頸部・肩甲帯の筋緊張を根本から予防します。\n\n`;
+  }
+  
+  // 生活環境・行動
+  response += `■ 生活環境の改善\n\n`;
+  if (hasSleepIssue) {
+    response += `- **ブルーライトカット**：19時以降はナイトモード＋画面輝度40％以下でメラトニン分泌を保護\n`;
+  }
+  if (hasStress) {
+    response += `- **デジタルデトックス**：1日1時間スマホOFF。前頭前野を休ませデフォルトモードネットワークを回復\n`;
+  }
+  response += `- **水分補給ルーティン**：起床時・食前・作業中に各200ml。脳脊髄液と脳血流を維持\n`;
+  
+  response += `\n\n`;
+  
+  // 追加質問（情報が少ない場合）
+  if (!hasSleepIssue && !hasFatigue && !hasShoulderPain) {
+    response += `もう少し詳しく教えていただけますか？\n`;
+    response += `- いつ頃から症状が出ていますか？\n`;
+    response += `- 仕事の内容や生活リズムはどんな感じですか？\n`;
+    response += `- 睡眠時間や食事のタイミングについても教えてください。\n\n`;
+    response += `あなたの状態をより正確に理解するために、これらの情報があると助かります。`;
+  } else {
+    response += `まずはこれらから始めてみてください。何か気になることがあれば、いつでも相談してくださいね。`;
+  }
+  
+  return response;
+}
