@@ -6,9 +6,7 @@ import { renderer } from './renderer'
 import type { Bindings } from './types'
 
 // Import routes
-import auth from './routes/auth'
-import diagnosis from './routes/diagnosis'
-import ai from './routes/ai'
+import chat from './routes/chat'
 import pages from './routes/pages'
 
 const app = new Hono<{ Bindings: Bindings }>()
@@ -21,9 +19,7 @@ app.use('*', logger())
 app.use('/static/*', serveStatic({ root: './public' }))
 
 // API routes
-app.route('/api/auth', auth)
-app.route('/api/diagnosis', diagnosis)
-app.route('/api/ai', ai)
+app.route('/api/chat', chat)
 
 // Page routes (before renderer)
 app.route('', pages)
@@ -31,220 +27,208 @@ app.route('', pages)
 // Frontend routes
 app.use(renderer)
 
-// Home page
+// Home page - Chat Interface
 app.get('/', (c) => {
   return c.render(
-    <div class="container" style="padding-top: 3rem; padding-bottom: 3rem;">
-      {/* Hero section */}
-      <div style="text-align: center; margin-bottom: 4rem;">
-        <div style="margin-bottom: 1.5rem;">
-          <img src="/static/unibase-logo.png" alt="脳活labo Unibase" style="height: 80px; margin-bottom: 1rem;" />
-        </div>
-        <h1 style="font-size: 2.5rem; font-weight: bold; margin-bottom: 1rem; color: var(--text-primary); text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
-          脳活AIヘルスアドバイザー<br />Neuro mate
+    <div class="container" style="padding-top: 2rem; padding-bottom: 2rem; max-width: 900px;">
+      {/* Header */}
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <img src="/static/unibase-logo.png" alt="脳活labo Unibase" style="height: 60px; margin-bottom: 0.5rem;" />
+        <h1 style="font-size: 1.75rem; font-weight: bold; margin-bottom: 0.5rem; color: var(--text-primary);">
+          Neuro mate - AIヘルスアドバイザー
         </h1>
-        <p style="font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 1rem; max-width: 700px; margin-left: auto; margin-right: auto;">
-          脳活labo Unibase 実店舗会員専用サービス
-        </p>
-        <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 3rem; max-width: 700px; margin-left: auto; margin-right: auto;">
-          あなたの症状・生活習慣から、AIが最適なサプリとセルフケアを提案します
+        <p style="font-size: 0.95rem; color: var(--text-secondary);">
+          脳活labo Unibase 店舗会員専用サービス
         </p>
       </div>
 
-      {/* Features */}
-      <div style="margin-bottom: 3rem;">
-        <h2 style="text-align: center; font-size: 1.75rem; margin-bottom: 2rem; color: var(--text-primary);">サービス機能</h2>
-        <div class="grid grid-2" style="gap: 1.5rem;">
-          <div class="card">
-            <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">🎯 総合的な分析</h3>
-            <p style="color: var(--text-secondary); font-size: 0.95rem;">慢性コリ・痛み、脳疲労、睡眠、美容、パフォーマンス、メンタルなどの観点から総合的に分析します。</p>
-          </div>
-          <div class="card">
-            <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">💊 最適なサプリ提案</h3>
-            <p style="color: var(--text-secondary); font-size: 0.95rem;">様々なサプリの中から、あなたの状態に最適なものを提案します。</p>
-          </div>
-          <div class="card">
-            <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">🧘 セルフケア指導</h3>
-            <p style="color: var(--text-secondary); font-size: 0.95rem;">脳トレ、呼吸法、ストレッチなど、今日から始められるセルフケアメニューをご提案。</p>
-          </div>
-          <div class="card">
-            <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">💬 AI詳細相談</h3>
-            <p style="color: var(--text-secondary); font-size: 0.95rem;">詳しい状況をテキストで相談し、AIから総合的なアドバイスを受けられます。</p>
-          </div>
-          <div class="card">
-            <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">📊 パーソナルコーチング</h3>
-            <p style="color: var(--text-secondary); font-size: 0.95rem;">日々の状態を記録し、AIがパーソナライズされたメニューを自動生成します。</p>
-          </div>
-          <div class="card">
-            <h3 style="color: var(--text-primary); margin-bottom: 0.5rem;">📈 継続的サポート</h3>
-            <p style="color: var(--text-secondary); font-size: 0.95rem;">診断結果や相談履歴を保存し、長期的な健康管理をサポートします。</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Registration CTA */}
-      <div style="margin-top: 4rem;">
-        <div class="card" style="border: 2px solid var(--primary-color); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(201, 184, 130, 0.1) 100%); text-align: center; padding: 2.5rem;">
-          <h2 style="font-size: 1.75rem; margin-bottom: 1rem; color: var(--text-primary);">
-            店舗会員の方へ
-          </h2>
-          <p style="font-size: 1rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
-            こちらからアカウント登録してサービスをご利用ください
-          </p>
-          <a href="/signup" class="btn btn-primary btn-lg">
-            アカウント登録
-          </a>
-        </div>
-      </div>
-    </div>
-  )
-})
-
-// Signup page
-app.get('/signup', (c) => {
-  return c.render(
-    <div class="container-sm" style="padding-top: 3rem;">
-      <div class="card">
-        <h2 class="card-header text-center">会員アカウント登録</h2>
-        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1.5rem; padding: 0 1rem;">
-          脳活labo Unibase 実店舗会員の方専用
-        </p>
-        <form id="signup-form" onsubmit="handleSignup(event)">
-          <div class="form-group">
-            <label class="form-label">メールアドレス</label>
-            <input type="email" class="form-input" name="email" required />
-          </div>
-          <div class="form-group">
-            <label class="form-label">パスワード（8文字以上）</label>
-            <input type="password" class="form-input" name="password" required minlength="8" />
-          </div>
-          <div id="signup-error"></div>
-          <button type="submit" class="btn btn-primary" style="width: 100%;">登録する</button>
-        </form>
-        <p class="text-center mt-4">
-          すでにアカウントをお持ちの方は<a href="/login" style="color: var(--primary-color); text-decoration: underline;">ログイン</a>
-        </p>
-      </div>
-      
-      <script>{`
-        async function handleSignup(event) {
-          event.preventDefault();
-          const form = event.target;
-          const email = form.email.value;
-          const password = form.password.value;
-          const errorDiv = document.getElementById('signup-error');
-          
-          const result = await signup(email, password);
-          
-          if (result.success) {
-            window.location.href = '/dashboard';
-          } else {
-            errorDiv.innerHTML = '<div class="error">' + result.error + '</div>';
-          }
-        }
-      `}</script>
-    </div>
-  )
-})
-
-// Login page
-app.get('/login', (c) => {
-  return c.render(
-    <div class="container-sm" style="padding-top: 3rem;">
-      <div class="card">
-        <h2 class="card-header text-center">ログイン</h2>
-        <form id="login-form" onsubmit="handleLogin(event)">
-          <div class="form-group">
-            <label class="form-label">メールアドレス</label>
-            <input type="email" class="form-input" name="email" required />
-          </div>
-          <div class="form-group">
-            <label class="form-label">パスワード</label>
-            <input type="password" class="form-input" name="password" required />
-          </div>
-          <div id="login-error"></div>
-          <button type="submit" class="btn btn-primary" style="width: 100%;">ログイン</button>
-        </form>
-        <p class="text-center mt-4">
-          アカウントをお持ちでない方は<a href="/signup" style="color: var(--primary-color); text-decoration: underline;">新規登録</a>
-        </p>
-      </div>
-      
-      <script>{`
-        async function handleLogin(event) {
-          event.preventDefault();
-          const form = event.target;
-          const email = form.email.value;
-          const password = form.password.value;
-          const errorDiv = document.getElementById('login-error');
-          
-          const result = await login(email, password);
-          
-          if (result.success) {
-            window.location.href = '/dashboard';
-          } else {
-            errorDiv.innerHTML = '<div class="error">' + result.error + '</div>';
-          }
-        }
-      `}</script>
-    </div>
-  )
-})
-
-// Dashboard page
-app.get('/dashboard', (c) => {
-  return c.render(
-    <div class="container" style="padding-top: 3rem;">
-      <h1 style="margin-bottom: 2rem;">マイページ</h1>
-      
-      <div id="dashboard-content">
-        <div class="loading">読み込み中...</div>
-      </div>
-      
-      <script>{`
-        document.addEventListener('DOMContentLoaded', async () => {
-          if (!authToken) {
-            window.location.href = '/login';
-            return;
-          }
-          
-          await checkAuth();
-          
-          if (!currentUser) {
-            window.location.href = '/login';
-            return;
-          }
-          
-          const content = document.getElementById('dashboard-content');
-          
-          content.innerHTML = \`
-            <div class="card">
-              <h2 style="color: var(--text-primary);">ようこそ、Neuro mateへ！</h2>
-              <p class="mt-4" style="color: var(--text-secondary);">メールアドレス: \${currentUser.email}</p>
-              <p style="color: var(--text-secondary); margin-top: 0.5rem;">すべての機能をご利用いただけます 🎉</p>
+      {/* Chat Container */}
+      <div class="card" style="padding: 0; overflow: hidden;">
+        {/* Chat Messages */}
+        <div id="chat-messages" style="height: 500px; overflow-y: auto; padding: 1.5rem; background: var(--bg-secondary);">
+          <div class="chat-message ai-message">
+            <div class="message-bubble" style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 1rem; border-radius: 12px; margin-bottom: 1rem;">
+              <p style="margin-bottom: 0.5rem; color: var(--text-primary);">
+                こんにちは！脳活labo Unibaseの<strong>Neuro mate</strong>です 🧠✨
+              </p>
+              <p style="margin-bottom: 0.5rem; color: var(--text-secondary);">
+                あなたの症状や生活習慣から、最適なサプリメントとセルフケアをご提案します。
+              </p>
+              <p style="color: var(--primary-color); font-weight: bold; margin-top: 1rem;">
+                まず、会員ID（例：UNI-001）を入力してください 📝
+              </p>
             </div>
-            
-            <div class="grid grid-2 mt-6">
-              <a href="/diagnosis" class="card" style="text-decoration: none; color: inherit; border: 2px solid var(--primary-color);">
-                <h3 style="color: var(--primary-color);">🎯 簡易診断</h3>
-                <p style="color: var(--text-secondary);">あなたに合ったサプリとセルフケアを見つける</p>
-              </a>
-              
-              <a href="/ai/consult" class="card" style="text-decoration: none; color: inherit; border: 2px solid var(--primary-color);">
-                <h3 style="color: var(--primary-color);">💬 AI相談</h3>
-                <p style="color: var(--text-secondary);">詳しい状況をテキストで相談し、AIからアドバイスを受ける</p>
-              </a>
-              
-              <a href="/ai/coach" class="card" style="text-decoration: none; color: inherit; border: 2px solid var(--primary-color);">
-                <h3 style="color: var(--primary-color);">📊 パーソナルコーチング</h3>
-                <p style="color: var(--text-secondary);">毎日の状態を記録して、パーソナライズされたメニューを取得</p>
-              </a>
+          </div>
+        </div>
+
+        {/* Input Area */}
+        <div id="input-area" style="padding: 1rem; border-top: 1px solid var(--border-color); background: var(--bg-card);">
+          <div id="member-id-input">
+            <div style="display: flex; gap: 0.5rem;">
+              <input 
+                type="text" 
+                id="member-id-field" 
+                class="form-input" 
+                placeholder="会員ID（例：UNI-001）" 
+                style="flex: 1;"
+                maxlength="7"
+              />
+              <button onclick="verifyMemberId()" class="btn btn-primary">
+                確認
+              </button>
+            </div>
+            <div id="member-error" style="color: #e74c3c; margin-top: 0.5rem; font-size: 0.9rem;"></div>
+          </div>
+
+          <div id="consultation-input" style="display: none;">
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label class="form-label">現在の悩み・症状</label>
+              <textarea id="concerns" class="form-input" rows="3" placeholder="例：肩こり、頭痛、睡眠の質が悪い..." style="resize: vertical;"></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label class="form-label">生活リズム</label>
+              <textarea id="lifestyle" class="form-input" rows="2" placeholder="例：デスクワーク8時間、睡眠6時間..." style="resize: vertical;"></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label class="form-label">その他補足情報</label>
+              <textarea id="notes" class="form-input" rows="2" placeholder="例：アレルギー、服用中の薬..." style="resize: vertical;"></textarea>
+            </div>
+            <button onclick="submitConsultation()" class="btn btn-primary" style="width: 100%;">
+              AIアドバイスを受ける
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <script>{`
+        let currentMember = null;
+
+        function addMessage(content, isAi = true) {
+          const messagesDiv = document.getElementById('chat-messages');
+          const messageDiv = document.createElement('div');
+          messageDiv.className = isAi ? 'chat-message ai-message' : 'chat-message user-message';
+          messageDiv.innerHTML = \`
+            <div class="message-bubble" style="
+              background: \${isAi ? 'var(--bg-card)' : 'var(--primary-color)'}; 
+              border: 1px solid \${isAi ? 'var(--border-color)' : 'var(--primary-color)'}; 
+              padding: 1rem; 
+              border-radius: 12px; 
+              margin-bottom: 1rem;
+              \${!isAi ? 'margin-left: auto; max-width: 80%;' : ''}
+            ">
+              <p style="margin: 0; color: \${isAi ? 'var(--text-primary)' : '#fff'};">\${content}</p>
             </div>
           \`;
+          messagesDiv.appendChild(messageDiv);
+          messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function verifyMemberId() {
+          const memberIdField = document.getElementById('member-id-field');
+          const memberId = memberIdField.value.trim().toUpperCase();
+          const errorDiv = document.getElementById('member-error');
+          
+          if (!memberId) {
+            errorDiv.textContent = '会員IDを入力してください';
+            return;
+          }
+
+          try {
+            const response = await fetch('/api/chat/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ member_id: memberId })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              currentMember = data.member;
+              addMessage(\`ようこそ、\${data.member.name || '会員様'}さん！😊\`, true);
+              addMessage(\`それでは、あなたの健康状態についてお聞かせください。\`, true);
+              
+              document.getElementById('member-id-input').style.display = 'none';
+              document.getElementById('consultation-input').style.display = 'block';
+            } else {
+              errorDiv.textContent = data.error;
+            }
+          } catch (error) {
+            errorDiv.textContent = '通信エラーが発生しました';
+          }
+        }
+
+        async function submitConsultation() {
+          const concerns = document.getElementById('concerns').value;
+          const lifestyle = document.getElementById('lifestyle').value;
+          const notes = document.getElementById('notes').value;
+
+          if (!concerns || !lifestyle) {
+            alert('現在の悩み・症状と生活リズムを入力してください');
+            return;
+          }
+
+          addMessage(\`【相談内容】\\n悩み: \${concerns}\\n生活: \${lifestyle}\${notes ? '\\n補足: ' + notes : ''}\`, false);
+          addMessage('分析中です...お待ちください ⏳', true);
+
+          try {
+            const response = await fetch('/api/chat/consult', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                member_id: currentMember.member_id,
+                member_name: currentMember.name,
+                currentConcerns: concerns,
+                lifestyleRhythm: lifestyle,
+                additionalNotes: notes
+              })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              const report = data.report;
+              
+              // Remove "分析中..." message
+              const messages = document.getElementById('chat-messages');
+              messages.removeChild(messages.lastChild);
+
+              // Display AI report
+              addMessage(\`📊 **総合分析結果**\\n\\n\${report.summary}\`, true);
+              
+              if (report.supplements && report.supplements.length > 0) {
+                const supplementText = report.supplements.map(s => 
+                  \`• **\${s.name}** (スコア: \${s.score}/100)\\n  \${s.reason}\`
+                ).join('\\n\\n');
+                addMessage(\`💊 **おすすめサプリメント**\\n\\n\${supplementText}\`, true);
+              }
+
+              if (report.selfCare && report.selfCare.length > 0) {
+                const selfCareText = report.selfCare.map(s => 
+                  \`• **\${s.title}**\\n  \${s.description}\`
+                ).join('\\n\\n');
+                addMessage(\`🧘 **セルフケアメニュー**\\n\\n\${selfCareText}\`, true);
+              }
+
+              addMessage('相談内容はスプレッドシートに保存されました ✅', true);
+            } else {
+              addMessage('申し訳ございません。エラーが発生しました。', true);
+            }
+          } catch (error) {
+            addMessage('通信エラーが発生しました', true);
+          }
+        }
+
+        // Allow Enter key to submit member ID
+        document.getElementById('member-id-field').addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            verifyMemberId();
+          }
         });
       `}</script>
     </div>
   )
 })
+
+
 
 export default app

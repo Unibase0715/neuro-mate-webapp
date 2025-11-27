@@ -7,6 +7,7 @@ export type Bindings = {
   OPENAI_MODEL: string;
   ANTHROPIC_API_KEY: string;
   ANTHROPIC_MODEL: string;
+  GOOGLE_API_KEY: string;
 }
 
 // User types
