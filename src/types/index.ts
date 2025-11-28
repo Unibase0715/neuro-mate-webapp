@@ -8,6 +8,8 @@ export type Bindings = {
   ANTHROPIC_API_KEY: string;
   ANTHROPIC_MODEL: string;
   GOOGLE_API_KEY: string;
+  LINE_CHANNEL_SECRET: string;
+  LINE_CHANNEL_ACCESS_TOKEN: string;
 }
 
 // User types

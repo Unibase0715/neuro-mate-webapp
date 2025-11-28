@@ -8,6 +8,7 @@ import type { Bindings } from './types'
 // Import routes
 import chat from './routes/chat'
 import pages from './routes/pages'
+import line from './routes/line'
 
 const app = new Hono<{ Bindings: Bindings }>()
 
@@ -20,6 +21,7 @@ app.use('/static/*', serveStatic({ root: './public' }))
 
 // API routes
 app.route('/api/chat', chat)
+app.route('/api/line', line)
 
 // Page routes (before renderer)
 app.route('', pages)
