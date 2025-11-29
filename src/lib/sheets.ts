@@ -1,9 +1,9 @@
 // Spreadsheet configuration
 const SPREADSHEET_ID = '1sXkkcOQ4iKLkemKCriLELZsms5d0jSoZ-17LimuyC_E';
 const SHEET_NAME = '表_1'; // Member master sheet
-const MEMBER_RANGE = `${SHEET_NAME}!B:D`; // member_id (B), name (C), status (D) columns
+const MEMBER_RANGE = `${SHEET_NAME}!C:E`; // member_id (C), name (D), status (E) columns
 const HISTORY_SHEET_NAME = '相談履歴'; // Consultation history sheet
-const LINE_LINK_SHEET_NAME = '表'; // LINE user linkage sheet (renamed from 'LINE連携')
+const LINE_LINK_SHEET_NAME = '表'; // LINE user linkage sheet
 const SHEETS_API_BASE = 'https://sheets.googleapis.com/v4/spreadsheets';
 
 // Member interface
