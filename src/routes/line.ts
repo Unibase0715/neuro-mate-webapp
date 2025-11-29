@@ -94,6 +94,10 @@ async function verifyLineSignature(
  * POST /api/line/webhook
  */
 line.post('/webhook', async (c) => {
+  let bodyText = '';
+  let body: any = {};
+  let replyToken: string | null = null;
+  
   try {
     const { env } = c;
     
@@ -114,15 +118,20 @@ line.post('/webhook', async (c) => {
     
     // Verify signature
     const signature = c.req.header('x-line-signature');
-    const bodyText = await c.req.text();
+    bodyText = await c.req.text();
     
     if (!signature || !(await verifyLineSignature(bodyText, signature, lineChannelSecret))) {
       console.error('Invalid LINE signature');
       return c.json({ error: 'Invalid signature' }, 403);
     }
     
-    const body = JSON.parse(bodyText);
+    body = JSON.parse(bodyText);
     const events = body.events || [];
+    
+    // Extract replyToken for error handling
+    if (events.length > 0 && events[0].replyToken) {
+      replyToken = events[0].replyToken;
+    }
     
     // Process each event
     for (const event of events) {
@@ -266,6 +275,24 @@ line.post('/webhook', async (c) => {
     return c.json({ success: true });
   } catch (error) {
     console.error('LINE webhook error:', error);
+    
+    // Try to send error message to LINE if replyToken is available
+    if (replyToken) {
+      try {
+        const { env } = c;
+        await sendLineReply(
+          replyToken,
+          [{ 
+            type: 'text', 
+            text: `申し訳ございません。システムエラーが発生しました。\n\nしばらく待ってから再度お試しいただくか、店舗スタッフにお問い合わせください。\n\nエラー: ${error instanceof Error ? error.message : 'Unknown error'}`
+          }],
+          env.LINE_CHANNEL_ACCESS_TOKEN
+        );
+      } catch (replyError) {
+        console.error('Failed to send error reply to LINE:', replyError);
+      }
+    }
+    
     return c.json({ 
       error: 'Webhook processing failed',
       details: error instanceof Error ? error.message : String(error)
