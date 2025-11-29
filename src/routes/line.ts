@@ -58,19 +58,35 @@ async function sendLinePush(
 }
 
 /**
- * Verify LINE Webhook Signature
+ * Verify LINE Webhook Signature using Web Crypto API
+ * Cloudflare Workers環境ではNode.jsのcryptoモジュールは使えないため、Web Crypto APIを使用
  */
-function verifyLineSignature(
+async function verifyLineSignature(
   body: string,
   signature: string,
   channelSecret: string
-): boolean {
-  const crypto = require('crypto');
-  const hash = crypto
-    .createHmac('sha256', channelSecret)
-    .update(body)
-    .digest('base64');
-  return hash === signature;
+): Promise<boolean> {
+  // TextEncoderでUTF-8バイト配列に変換
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(channelSecret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  
+  const signatureBytes = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    encoder.encode(body)
+  );
+  
+  // Base64エンコード
+  const hashArray = Array.from(new Uint8Array(signatureBytes));
+  const hashBase64 = btoa(String.fromCharCode(...hashArray));
+  
+  return hashBase64 === signature;
 }
 
 /**
@@ -100,7 +116,7 @@ line.post('/webhook', async (c) => {
     const signature = c.req.header('x-line-signature');
     const bodyText = await c.req.text();
     
-    if (!signature || !verifyLineSignature(bodyText, signature, lineChannelSecret)) {
+    if (!signature || !(await verifyLineSignature(bodyText, signature, lineChannelSecret))) {
       console.error('Invalid LINE signature');
       return c.json({ error: 'Invalid signature' }, 403);
     }
