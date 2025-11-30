@@ -6,6 +6,39 @@ import { generateChatResponse } from '../lib/ai';
 const line = new Hono<{ Bindings: Bindings }>();
 
 /**
+ * Debug endpoint to test Service Account
+ */
+line.get('/debug', async (c) => {
+  try {
+    const { env } = c;
+    const key = env.GOOGLE_SERVICE_ACCOUNT_KEY;
+    
+    if (!key) {
+      return c.json({ error: 'GOOGLE_SERVICE_ACCOUNT_KEY not set' });
+    }
+    
+    // Check if it's valid JSON
+    try {
+      const parsed = JSON.parse(key);
+      return c.json({ 
+        success: true,
+        hasClientEmail: !!parsed.client_email,
+        hasPrivateKey: !!parsed.private_key,
+        clientEmail: parsed.client_email
+      });
+    } catch (e) {
+      return c.json({ 
+        error: 'Invalid JSON',
+        keyLength: key.length,
+        firstChars: key.substring(0, 50)
+      });
+    }
+  } catch (error) {
+    return c.json({ error: String(error) });
+  }
+});
+
+/**
  * LINE Messaging API - Send Reply
  */
 async function sendLineReply(

@@ -8,63 +8,28 @@ const SHEETS_API_BASE = 'https://sheets.googleapis.com/v4/spreadsheets';
 
 /**
  * Get Google OAuth2 access token from Service Account credentials
+ * Using jose library for proper JWT signing
  */
 async function getAccessToken(serviceAccountKey: string): Promise<string> {
   try {
+    const { SignJWT, importPKCS8 } = await import('jose');
     const credentials = JSON.parse(serviceAccountKey);
     
-    // Create JWT
-    const header = {
-      alg: 'RS256',
-      typ: 'JWT'
-    };
+    // Import private key using jose
+    const privateKey = await importPKCS8(credentials.private_key, 'RS256');
     
     const now = Math.floor(Date.now() / 1000);
-    const claim = {
-      iss: credentials.client_email,
-      scope: 'https://www.googleapis.com/auth/spreadsheets',
-      aud: 'https://oauth2.googleapis.com/token',
-      exp: now + 3600,
-      iat: now
-    };
     
-    // Encode header and claim
-    const encodedHeader = btoa(JSON.stringify(header)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
-    const encodedClaim = btoa(JSON.stringify(claim)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
-    const signatureInput = `${encodedHeader}.${encodedClaim}`;
+    // Create and sign JWT with scope claim
+    const jwt = await new SignJWT({ scope: 'https://www.googleapis.com/auth/spreadsheets' })
+      .setProtectedHeader({ alg: 'RS256', typ: 'JWT' })
+      .setIssuer(credentials.client_email)
+      .setAudience('https://oauth2.googleapis.com/token')
+      .setIssuedAt(now)
+      .setExpirationTime(now + 3600)
+      .sign(privateKey);
     
-    // Import private key
-    const privateKey = credentials.private_key;
-    const pemHeader = '-----BEGIN PRIVATE KEY-----';
-    const pemFooter = '-----END PRIVATE KEY-----';
-    const pemContents = privateKey.substring(pemHeader.length, privateKey.length - pemFooter.length).replace(/\s/g, '');
-    const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
-    
-    const cryptoKey = await crypto.subtle.importKey(
-      'pkcs8',
-      binaryDer,
-      {
-        name: 'RSASSA-PKCS1-v1_5',
-        hash: 'SHA-256'
-      },
-      false,
-      ['sign']
-    );
-    
-    // Sign JWT
-    const encoder = new TextEncoder();
-    const signature = await crypto.subtle.sign(
-      'RSASSA-PKCS1-v1_5',
-      cryptoKey,
-      encoder.encode(signatureInput)
-    );
-    
-    const encodedSignature = btoa(String.fromCharCode(...new Uint8Array(signature)))
-      .replace(/=/g, '')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_');
-    
-    const jwt = `${signatureInput}.${encodedSignature}`;
+    console.log('JWT created successfully');
     
     // Exchange JWT for access token
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
@@ -76,14 +41,20 @@ async function getAccessToken(serviceAccountKey: string): Promise<string> {
     });
     
     if (!tokenResponse.ok) {
-      throw new Error(`Failed to get access token: ${tokenResponse.status}`);
+      const errorText = await tokenResponse.text();
+      console.error('Token response error:', tokenResponse.status, errorText);
+      throw new Error(`Failed to get access token: ${tokenResponse.status} - ${errorText}`);
     }
     
     const tokenData = await tokenResponse.json();
+    console.log('Successfully obtained access token');
     return tokenData.access_token;
   } catch (error) {
     console.error('Error getting access token:', error);
-    throw new Error('Google認証に失敗しました');
+    if (error instanceof Error) {
+      console.error('Error details:', error.message, error.stack);
+    }
+    throw new Error(`Google認証に失敗しました: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
