@@ -215,7 +215,22 @@ line.post('/webhook', async (c) => {
             }
             
             // Link LINE user to member
-            await linkLineUserToMember(userId, memberId, member.name, googleServiceAccountKey);
+            try {
+              console.log(`[Webhook] Attempting to link: userId=${userId}, memberId=${memberId}, name=${member.name}`);
+              await linkLineUserToMember(userId, memberId, member.name, googleServiceAccountKey);
+              console.log(`[Webhook] Successfully linked LINE user ${userId} to member ${memberId}`);
+            } catch (linkError) {
+              console.error('[Webhook] Failed to link LINE user:', linkError);
+              await sendLineReply(
+                replyToken,
+                [{ 
+                  type: 'text', 
+                  text: `申し訳ございません。LINE連携の保存中にエラーが発生しました。\n\nエラー詳細: ${linkError instanceof Error ? linkError.message : String(linkError)}\n\n再度お試しいただくか、店舗スタッフにお問い合わせください。`
+                }],
+                lineChannelAccessToken
+              );
+              continue;
+            }
             
             await sendLineReply(
               replyToken,
@@ -226,7 +241,7 @@ line.post('/webhook', async (c) => {
               lineChannelAccessToken
             );
             
-            console.log(`Linked LINE user ${userId} to member ${memberId}`);
+            console.log(`[Webhook] Registration complete for ${userId}`);
             continue;
           } else {
             // Not a member ID - ask for registration

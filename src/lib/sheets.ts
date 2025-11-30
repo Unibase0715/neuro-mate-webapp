@@ -251,11 +251,17 @@ export async function linkLineUserToMember(
   serviceAccountKey: string
 ): Promise<void> {
   try {
+    console.log('[linkLineUserToMember] Starting...', { lineUserId, memberId, memberName });
+    
     const accessToken = await getAccessToken(serviceAccountKey);
+    console.log('[linkLineUserToMember] Access token obtained');
+    
     const timestamp = new Date().toISOString();
     const rowData = [lineUserId, memberId, memberName, timestamp];
+    console.log('[linkLineUserToMember] Row data:', rowData);
 
     const url = `${SHEETS_API_BASE}/${SPREADSHEET_ID}/values/${encodeURIComponent(`${LINE_LINK_SHEET_NAME}!A:D`)}:append?valueInputOption=RAW`;
+    console.log('[linkLineUserToMember] URL:', url);
     
     const response = await fetch(url, {
       method: 'POST',
@@ -268,12 +274,18 @@ export async function linkLineUserToMember(
       }),
     });
 
+    console.log('[linkLineUserToMember] Response status:', response.status);
+
     if (!response.ok) {
-      console.error('Failed to link LINE user:', response.status, await response.text());
+      const errorText = await response.text();
+      console.error('[linkLineUserToMember] Failed:', response.status, errorText);
       throw new Error('LINE連携の保存に失敗しました');
     }
+    
+    const result = await response.json();
+    console.log('[linkLineUserToMember] Success:', result);
   } catch (error) {
-    console.error('Error linking LINE user to member:', error);
+    console.error('[linkLineUserToMember] Error:', error);
     throw error;
   }
 }
