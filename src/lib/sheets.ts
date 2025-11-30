@@ -6,6 +6,87 @@ const HISTORY_SHEET_NAME = 'history'; // Consultation history sheet (renamed fro
 const LINE_LINK_SHEET_NAME = 'line_links'; // LINE user linkage sheet (renamed from 表)
 const SHEETS_API_BASE = 'https://sheets.googleapis.com/v4/spreadsheets';
 
+/**
+ * Get Google OAuth2 access token from Service Account credentials
+ */
+async function getAccessToken(serviceAccountKey: string): Promise<string> {
+  try {
+    const credentials = JSON.parse(serviceAccountKey);
+    
+    // Create JWT
+    const header = {
+      alg: 'RS256',
+      typ: 'JWT'
+    };
+    
+    const now = Math.floor(Date.now() / 1000);
+    const claim = {
+      iss: credentials.client_email,
+      scope: 'https://www.googleapis.com/auth/spreadsheets',
+      aud: 'https://oauth2.googleapis.com/token',
+      exp: now + 3600,
+      iat: now
+    };
+    
+    // Encode header and claim
+    const encodedHeader = btoa(JSON.stringify(header)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+    const encodedClaim = btoa(JSON.stringify(claim)).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+    const signatureInput = `${encodedHeader}.${encodedClaim}`;
+    
+    // Import private key
+    const privateKey = credentials.private_key;
+    const pemHeader = '-----BEGIN PRIVATE KEY-----';
+    const pemFooter = '-----END PRIVATE KEY-----';
+    const pemContents = privateKey.substring(pemHeader.length, privateKey.length - pemFooter.length).replace(/\s/g, '');
+    const binaryDer = Uint8Array.from(atob(pemContents), c => c.charCodeAt(0));
+    
+    const cryptoKey = await crypto.subtle.importKey(
+      'pkcs8',
+      binaryDer,
+      {
+        name: 'RSASSA-PKCS1-v1_5',
+        hash: 'SHA-256'
+      },
+      false,
+      ['sign']
+    );
+    
+    // Sign JWT
+    const encoder = new TextEncoder();
+    const signature = await crypto.subtle.sign(
+      'RSASSA-PKCS1-v1_5',
+      cryptoKey,
+      encoder.encode(signatureInput)
+    );
+    
+    const encodedSignature = btoa(String.fromCharCode(...new Uint8Array(signature)))
+      .replace(/=/g, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_');
+    
+    const jwt = `${signatureInput}.${encodedSignature}`;
+    
+    // Exchange JWT for access token
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`
+    });
+    
+    if (!tokenResponse.ok) {
+      throw new Error(`Failed to get access token: ${tokenResponse.status}`);
+    }
+    
+    const tokenData = await tokenResponse.json();
+    return tokenData.access_token;
+  } catch (error) {
+    console.error('Error getting access token:', error);
+    throw new Error('Google認証に失敗しました');
+  }
+}
+
 // Member interface
 export interface Member {
   member_id: string;
@@ -36,17 +117,23 @@ export interface LineMemberLink {
 /**
  * Verify member ID and check status
  * @param memberId - Member ID to verify (e.g., UNI-001)
- * @param apiKey - Google API Key
+ * @param serviceAccountKey - Google Service Account Key (JSON string)
  * @returns Member object if found and active, null otherwise
  */
 export async function verifyMemberId(
   memberId: string,
-  apiKey: string
+  serviceAccountKey: string
 ): Promise<Member | null> {
   try {
-    const url = `${SHEETS_API_BASE}/${SPREADSHEET_ID}/values/${encodeURIComponent(MEMBER_RANGE)}?key=${apiKey}`;
+    const accessToken = await getAccessToken(serviceAccountKey);
+    const url = `${SHEETS_API_BASE}/${SPREADSHEET_ID}/values/${encodeURIComponent(MEMBER_RANGE)}`;
     
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+    
     if (!response.ok) {
       throw new Error(`Google Sheets API error: ${response.status}`);
     }
@@ -82,13 +169,15 @@ export async function verifyMemberId(
 /**
  * Save consultation history to spreadsheet
  * @param history - Consultation history data
- * @param apiKey - Google API Key
+ * @param serviceAccountKey - Google Service Account Key (JSON string)
  */
 export async function saveConsultationHistory(
   history: ConsultationHistory,
-  apiKey: string
+  serviceAccountKey: string
 ): Promise<void> {
   try {
+    const accessToken = await getAccessToken(serviceAccountKey);
+    
     // Prepare row data
     const rowData = [
       history.timestamp,
@@ -99,11 +188,12 @@ export async function saveConsultationHistory(
       history.ai_response,
     ];
 
-    const url = `${SHEETS_API_BASE}/${SPREADSHEET_ID}/values/${encodeURIComponent(`${HISTORY_SHEET_NAME}!A:F`)}:append?valueInputOption=RAW&key=${apiKey}`;
+    const url = `${SHEETS_API_BASE}/${SPREADSHEET_ID}/values/${encodeURIComponent(`${HISTORY_SHEET_NAME}!A:F`)}:append?valueInputOption=RAW`;
     
     const response = await fetch(url, {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -128,12 +218,18 @@ export async function saveConsultationHistory(
  */
 export async function getMemberHistory(
   memberId: string,
-  apiKey: string
+  serviceAccountKey: string
 ): Promise<ConsultationHistory[]> {
   try {
-    const url = `${SHEETS_API_BASE}/${SPREADSHEET_ID}/values/${encodeURIComponent(`${HISTORY_SHEET_NAME}!A:F`)}?key=${apiKey}`;
+    const accessToken = await getAccessToken(serviceAccountKey);
+    const url = `${SHEETS_API_BASE}/${SPREADSHEET_ID}/values/${encodeURIComponent(`${HISTORY_SHEET_NAME}!A:F`)}`;
     
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+    
     if (!response.ok) {
       return [];
     }
@@ -181,17 +277,19 @@ export async function linkLineUserToMember(
   lineUserId: string,
   memberId: string,
   memberName: string,
-  apiKey: string
+  serviceAccountKey: string
 ): Promise<void> {
   try {
+    const accessToken = await getAccessToken(serviceAccountKey);
     const timestamp = new Date().toISOString();
     const rowData = [lineUserId, memberId, memberName, timestamp];
 
-    const url = `${SHEETS_API_BASE}/${SPREADSHEET_ID}/values/${encodeURIComponent(`${LINE_LINK_SHEET_NAME}!A:D`)}:append?valueInputOption=RAW&key=${apiKey}`;
+    const url = `${SHEETS_API_BASE}/${SPREADSHEET_ID}/values/${encodeURIComponent(`${LINE_LINK_SHEET_NAME}!A:D`)}:append?valueInputOption=RAW`;
     
     const response = await fetch(url, {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -212,17 +310,23 @@ export async function linkLineUserToMember(
 /**
  * Get linked member from LINE user ID
  * @param lineUserId - LINE user ID
- * @param apiKey - Google API Key
+ * @param serviceAccountKey - Google Service Account Key (JSON string)
  * @returns LineMemberLink object if found, null otherwise
  */
 export async function getLinkedMember(
   lineUserId: string,
-  apiKey: string
+  serviceAccountKey: string
 ): Promise<LineMemberLink | null> {
   try {
-    const url = `${SHEETS_API_BASE}/${SPREADSHEET_ID}/values/${encodeURIComponent(`${LINE_LINK_SHEET_NAME}!A:D`)}?key=${apiKey}`;
+    const accessToken = await getAccessToken(serviceAccountKey);
+    const url = `${SHEETS_API_BASE}/${SPREADSHEET_ID}/values/${encodeURIComponent(`${LINE_LINK_SHEET_NAME}!A:D`)}`;
     
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${accessToken}`
+      }
+    });
+    
     if (!response.ok) {
       return null;
     }

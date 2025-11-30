@@ -104,16 +104,16 @@ line.post('/webhook', async (c) => {
     // Get LINE credentials from environment
     const lineChannelSecret = env.LINE_CHANNEL_SECRET;
     const lineChannelAccessToken = env.LINE_CHANNEL_ACCESS_TOKEN;
-    const googleApiKey = env.GOOGLE_API_KEY;
+    const googleServiceAccountKey = env.GOOGLE_SERVICE_ACCOUNT_KEY;
     
     if (!lineChannelSecret || !lineChannelAccessToken) {
       console.error('LINE credentials not configured');
       return c.json({ error: 'LINE credentials not configured' }, 500);
     }
     
-    if (!googleApiKey) {
-      console.error('Google API key not configured');
-      return c.json({ error: 'Google API key not configured' }, 500);
+    if (!googleServiceAccountKey) {
+      console.error('Google Service Account key not configured');
+      return c.json({ error: 'Google Service Account key not configured' }, 500);
     }
     
     // Verify signature
@@ -144,7 +144,7 @@ line.post('/webhook', async (c) => {
         console.log(`Message: ${userMessage}`);
         
         // Check if user is linked to a member
-        const linkedMember = await getLinkedMember(userId, googleApiKey);
+        const linkedMember = await getLinkedMember(userId, googleServiceAccountKey);
         
         if (!linkedMember) {
           // User not linked - check if message is a member ID
@@ -155,7 +155,7 @@ line.post('/webhook', async (c) => {
             const memberId = match[0];
             
             // Verify member ID
-            const member = await verifyMemberId(memberId, googleApiKey);
+            const member = await verifyMemberId(memberId, googleServiceAccountKey);
             
             if (!member) {
               await sendLineReply(
@@ -182,7 +182,7 @@ line.post('/webhook', async (c) => {
             }
             
             // Link LINE user to member
-            await linkLineUserToMember(userId, memberId, member.name, googleApiKey);
+            await linkLineUserToMember(userId, memberId, member.name, googleServiceAccountKey);
             
             await sendLineReply(
               replyToken,
@@ -210,7 +210,7 @@ line.post('/webhook', async (c) => {
         }
         
         // User is linked - check member status
-        const member = await verifyMemberId(linkedMember.member_id, googleApiKey);
+        const member = await verifyMemberId(linkedMember.member_id, googleServiceAccountKey);
         
         if (!member || member.status !== 'active') {
           await sendLineReply(
@@ -248,7 +248,7 @@ line.post('/webhook', async (c) => {
             content: userMessage,
             ai_response: aiReply,
           },
-          googleApiKey
+          googleServiceAccountKey
         );
         
         // Send AI reply via LINE
@@ -310,15 +310,15 @@ line.post('/send-reminders', async (c) => {
     const { env } = c;
     
     const lineChannelAccessToken = env.LINE_CHANNEL_ACCESS_TOKEN;
-    const googleApiKey = env.GOOGLE_API_KEY;
+    const googleServiceAccountKey = env.GOOGLE_API_KEY;
     
-    if (!lineChannelAccessToken || !googleApiKey) {
+    if (!lineChannelAccessToken || !googleServiceAccountKey) {
       return c.json({ error: 'Credentials not configured' }, 500);
     }
     
     // Get all active members with linked LINE accounts
     const { getAllLinkedActiveMembers } = await import('../lib/sheets');
-    const activeMembers = await getAllLinkedActiveMembers(googleApiKey);
+    const activeMembers = await getAllLinkedActiveMembers(googleServiceAccountKey);
     
     if (activeMembers.length === 0) {
       return c.json({ 

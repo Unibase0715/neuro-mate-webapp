@@ -7,7 +7,7 @@ export type Bindings = {
   OPENAI_MODEL: string;
   ANTHROPIC_API_KEY: string;
   ANTHROPIC_MODEL: string;
-  GOOGLE_API_KEY: string;
+  GOOGLE_SERVICE_ACCOUNT_KEY: string;
   LINE_CHANNEL_SECRET: string;
   LINE_CHANNEL_ACCESS_TOKEN: string;
 }
